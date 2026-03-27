@@ -15,7 +15,7 @@ const CONFIG = {
 const DIFFICULTY_LEVELS = {
     easy: {
         name: "Dễ",
-        gameSpeed: 280,
+        gameSpeed: 200,
         botErrorRate: 0.45,
         gameDuration: 60,
         correctFoodInterval: 2000,  // 2s spawn 1 mồi đúng
@@ -23,7 +23,7 @@ const DIFFICULTY_LEVELS = {
     },
     medium: {
         name: "Trung bình",
-        gameSpeed: 200,
+        gameSpeed: 140,
         botErrorRate: 0.20,
         gameDuration: 60,
         correctFoodInterval: 2000,  // 2s spawn 1 mồi đúng
@@ -31,7 +31,7 @@ const DIFFICULTY_LEVELS = {
     },
     hard: {
         name: "Khó",
-        gameSpeed: 140,
+        gameSpeed: 100,
         botErrorRate: 0.05,
         gameDuration: 60,
         correctFoodInterval: 1500,  // 1.5s spawn 1 mồi đúng
@@ -94,6 +94,8 @@ class Game {
         this.canvas.height = CONFIG.GRID_SIZE * CONFIG.CELL_SIZE;
         
         this.difficulty = 'medium';
+        this.gameMode = 'single'; // 'single' hoặc 'multi'
+        this.currentTopic = TOPICS[0]; // Khởi tạo topic mặc định
         this.reset();
         this.setupControls();
     }
@@ -101,10 +103,12 @@ class Game {
     reset() {
         this.gameRunning = false;
         this.gamePaused = false;
-        const level = DIFFICULTY_LEVELS[this.difficulty];
-        this.timeLeft = level.gameDuration;
         
-        // Khởi tạo rắn người chơi (màu xanh)
+        // Lấy thời gian từ input hoặc dùng mặc định
+        const customTime = parseInt(document.getElementById('gameTime')?.value) || 60;
+        this.timeLeft = customTime;
+        
+        // Khởi tạo rắn người chơi 1 (màu xanh)
         this.player = {
             body: [{x: 5, y: 10}, {x: 4, y: 10}, {x: 3, y: 10}],
             direction: {x: 1, y: 0},
@@ -112,18 +116,47 @@ class Game {
             score: 0,
             stunned: false,
             stunnedUntil: 0,
-            color: '#2196F3'
+            color: '#2196F3',
+            alive: true,
+            respawnTime: 0,
+            invincible: false,
+            invincibleUntil: 0
         };
         
-        // Khởi tạo rắn bot (màu đỏ)
+        // Khởi tạo rắn bot (màu đỏ) - luôn có
         this.bot = {
             body: [{x: 15, y: 10}, {x: 16, y: 10}, {x: 17, y: 10}],
             direction: {x: -1, y: 0},
+            nextDirection: {x: -1, y: 0},
             score: 0,
             stunned: false,
             stunnedUntil: 0,
-            color: '#f44336'
+            color: '#f44336',
+            alive: true,
+            isBot: true,
+            respawnTime: 0,
+            invincible: false,
+            invincibleUntil: 0
         };
+        
+        // Khởi tạo rắn người chơi 2 (màu xanh lá) - chỉ khi chế độ 2 người
+        if (this.gameMode === 'multi') {
+            this.player2 = {
+                body: [{x: 10, y: 5}, {x: 10, y: 6}, {x: 10, y: 7}],
+                direction: {x: 0, y: -1},
+                nextDirection: {x: 0, y: -1},
+                score: 0,
+                stunned: false,
+                stunnedUntil: 0,
+                color: '#4CAF50',
+                alive: true,
+                respawnTime: 0,
+                invincible: false,
+                invincibleUntil: 0
+            };
+        } else {
+            this.player2 = null;
+        }
         
         this.foods = [];
         this.updateUI();
@@ -137,18 +170,44 @@ class Game {
         document.addEventListener('keydown', (e) => {
             if (!this.gameRunning || this.gamePaused) return;
             
-            const key = e.key;
-            const dir = this.player.direction;
+            const key = e.key.toLowerCase();
             
-            if (key === 'ArrowUp' && dir.y === 0) {
-                this.player.nextDirection = {x: 0, y: -1};
-            } else if (key === 'ArrowDown' && dir.y === 0) {
-                this.player.nextDirection = {x: 0, y: 1};
-            } else if (key === 'ArrowLeft' && dir.x === 0) {
-                this.player.nextDirection = {x: -1, y: 0};
-            } else if (key === 'ArrowRight' && dir.x === 0) {
-                this.player.nextDirection = {x: 1, y: 0};
+            // Điều khiển người chơi 1 (Arrow keys)
+            if (this.player.alive) {
+                const dir = this.player.direction;
+                if (e.key === 'ArrowUp' && dir.y === 0) {
+                    this.player.nextDirection = {x: 0, y: -1};
+                } else if (e.key === 'ArrowDown' && dir.y === 0) {
+                    this.player.nextDirection = {x: 0, y: 1};
+                } else if (e.key === 'ArrowLeft' && dir.x === 0) {
+                    this.player.nextDirection = {x: -1, y: 0};
+                } else if (e.key === 'ArrowRight' && dir.x === 0) {
+                    this.player.nextDirection = {x: 1, y: 0};
+                }
             }
+            
+            // Điều khiển người chơi 2 (WASD) - chỉ khi chế độ 2 người
+            if (this.gameMode === 'multi' && this.player2 && this.player2.alive) {
+                const dir2 = this.player2.direction;
+                if (key === 'w' && dir2.y === 0) {
+                    this.player2.nextDirection = {x: 0, y: -1};
+                } else if (key === 's' && dir2.y === 0) {
+                    this.player2.nextDirection = {x: 0, y: 1};
+                } else if (key === 'a' && dir2.x === 0) {
+                    this.player2.nextDirection = {x: -1, y: 0};
+                } else if (key === 'd' && dir2.x === 0) {
+                    this.player2.nextDirection = {x: 1, y: 0};
+                }
+            }
+        });
+        
+        // Chọn chế độ chơi
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+                this.gameMode = e.currentTarget.dataset.mode;
+            });
         });
         
         // Chọn cấp độ trong menu
@@ -164,6 +223,16 @@ class Game {
         document.getElementById('playBtn').addEventListener('click', () => {
             this.selectNewTopic();
             this.reset();
+            
+            // Cập nhật UI theo chế độ
+            if (this.gameMode === 'multi') {
+                document.getElementById('player3-info').style.display = 'block';
+                document.getElementById('control-text').textContent = '⌨️ P1: ← ↑ → ↓ | P2: A W D S';
+            } else {
+                document.getElementById('player3-info').style.display = 'none';
+                document.getElementById('control-text').textContent = '⌨️ Điều khiển: Phím mũi tên ← ↑ → ↓';
+            }
+            
             document.getElementById('menuScreen').style.display = 'none';
             document.getElementById('gameScreen').style.display = 'block';
             this.showTopicModal();
@@ -218,6 +287,7 @@ class Game {
         if (this.correctFoodSpawner) clearInterval(this.correctFoodSpawner);
         if (this.wrongFoodSpawner) clearInterval(this.wrongFoodSpawner);
         if (this.timer) clearInterval(this.timer);
+        if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
     }
     
     start() {
@@ -237,6 +307,16 @@ class Game {
         this.wrongFoodSpawner = setInterval(() => this.spawnFood(false), level.wrongFoodInterval);
         
         this.timer = setInterval(() => this.updateTimer(), 1000);
+        
+        // Vẽ liên tục với requestAnimationFrame để mượt hơn
+        this.animationFrame = requestAnimationFrame(() => this.render());
+    }
+    
+    render() {
+        if (this.gameRunning) {
+            this.draw();
+            this.animationFrame = requestAnimationFrame(() => this.render());
+        }
     }
     
     togglePause() {
@@ -249,28 +329,54 @@ class Game {
         
         const now = Date.now();
         
-        // Cập nhật rắn người chơi
-        if (!this.player.stunned || now >= this.player.stunnedUntil) {
-            if (this.player.stunned) {
-                this.player.stunned = false;
-                document.getElementById('player-status').textContent = '';
+        // Cập nhật rắn người chơi (nếu còn sống)
+        if (this.player.alive) {
+            if (!this.player.stunned || now >= this.player.stunnedUntil) {
+                if (this.player.stunned) {
+                    this.player.stunned = false;
+                    document.getElementById('player-status').textContent = '';
+                }
+                this.player.direction = this.player.nextDirection;
+                this.moveSnake(this.player);
             }
-            this.player.direction = this.player.nextDirection;
-            this.moveSnake(this.player);
+        } else if (this.player.respawnTime > 0 && now >= this.player.respawnTime) {
+            // Hồi sinh sau 3 giây
+            this.respawnSnake(this.player, 'player');
         }
         
-        // Cập nhật rắn bot
-        if (!this.bot.stunned || now >= this.bot.stunnedUntil) {
-            if (this.bot.stunned) {
-                this.bot.stunned = false;
-                document.getElementById('bot-status').textContent = '';
+        // Cập nhật rắn bot (nếu còn sống) - luôn là AI
+        if (this.bot.alive) {
+            if (!this.bot.stunned || now >= this.bot.stunnedUntil) {
+                if (this.bot.stunned) {
+                    this.bot.stunned = false;
+                    document.getElementById('bot-status').textContent = '';
+                }
+                this.updateBotAI();
+                this.moveSnake(this.bot);
             }
-            this.updateBotAI();
-            this.moveSnake(this.bot);
+        } else if (this.bot.respawnTime > 0 && now >= this.bot.respawnTime) {
+            // Hồi sinh sau 3 giây
+            this.respawnSnake(this.bot, 'bot');
+        }
+        
+        // Cập nhật rắn người chơi 2 (nếu có và còn sống)
+        if (this.player2) {
+            if (this.player2.alive) {
+                if (!this.player2.stunned || now >= this.player2.stunnedUntil) {
+                    if (this.player2.stunned) {
+                        this.player2.stunned = false;
+                        document.getElementById('player3-status').textContent = '';
+                    }
+                    this.player2.direction = this.player2.nextDirection;
+                    this.moveSnake(this.player2);
+                }
+            } else if (this.player2.respawnTime > 0 && now >= this.player2.respawnTime) {
+                // Hồi sinh sau 3 giây
+                this.respawnSnake(this.player2, 'player3');
+            }
         }
         
         this.checkCollisions();
-        this.draw();
     }
     
     moveSnake(snake) {
@@ -427,11 +533,13 @@ class Game {
             }
         }
         
-        // Kiểm tra va chạm với rắn đối phương
-        const opponent = snake === this.bot ? this.player : this.bot;
-        for (let i = 0; i < opponent.body.length; i++) {
-            if (pos.x === opponent.body[i].x && pos.y === opponent.body[i].y) {
-                return true;
+        // Kiểm tra va chạm với tất cả rắn khác
+        const otherSnakes = [this.player, this.bot, this.player2].filter(s => s && s !== snake && s.alive);
+        for (const other of otherSnakes) {
+            for (let i = 0; i < other.body.length; i++) {
+                if (pos.x === other.body[i].x && pos.y === other.body[i].y) {
+                    return true;
+                }
             }
         }
         
@@ -469,68 +577,148 @@ class Game {
     }
     
     checkCollisions() {
-        const playerHead = this.player.body[0];
-        const botHead = this.bot.body[0];
+        if (!this.player.alive && !this.bot.alive && (!this.player2 || !this.player2.alive)) return;
         
-        // Kiểm tra va chạm đầu với đầu trước (HÒA)
-        if (playerHead.x === botHead.x && playerHead.y === botHead.y) {
-            this.gameOver('draw', 'Hai đầu rắn chạm nhau!');
-            return;
-        }
+        const playerHead = this.player.alive ? this.player.body[0] : null;
+        const botHead = this.bot.alive ? this.bot.body[0] : null;
+        const player2Head = (this.player2 && this.player2.alive) ? this.player2.body[0] : null;
         
-        // Kiểm tra người chơi đụng tường
-        if (playerHead.x < 0 || playerHead.x >= CONFIG.GRID_SIZE || 
-            playerHead.y < 0 || playerHead.y >= CONFIG.GRID_SIZE) {
-            this.gameOver('bot', 'Người chơi đụng tường!');
-            return;
-        }
-        
-        // Kiểm tra bot đụng tường
-        if (botHead.x < 0 || botHead.x >= CONFIG.GRID_SIZE || 
-            botHead.y < 0 || botHead.y >= CONFIG.GRID_SIZE) {
-            this.gameOver('player', 'Bot đụng tường!');
-            return;
-        }
-        
-        // Kiểm tra người chơi đụng thân mình
-        for (let i = 1; i < this.player.body.length; i++) {
-            if (playerHead.x === this.player.body[i].x && 
-                playerHead.y === this.player.body[i].y) {
-                this.gameOver('bot', 'Người chơi đụng thân mình!');
+        // Hàm helper để kiểm tra va chạm giữa 2 rắn
+        const checkSnakeCollision = (snake1, snake1Name, snake1Type) => {
+            if (!snake1.alive) return;
+            
+            // Kiểm tra bất tử
+            const now = Date.now();
+            if (snake1.invincible && now < snake1.invincibleUntil) {
+                return; // Bỏ qua va chạm khi bất tử
+            }
+            
+            const head1 = snake1.body[0];
+            
+            // Đụng tường
+            if (head1.x < 0 || head1.x >= CONFIG.GRID_SIZE || 
+                head1.y < 0 || head1.y >= CONFIG.GRID_SIZE) {
+                this.killSnake(snake1, `${snake1Name} đụng tường!`);
                 return;
             }
-        }
-        
-        // Kiểm tra bot đụng thân mình
-        for (let i = 1; i < this.bot.body.length; i++) {
-            if (botHead.x === this.bot.body[i].x && 
-                botHead.y === this.bot.body[i].y) {
-                this.gameOver('player', 'Bot đụng thân mình!');
-                return;
+            
+            // Đụng thân mình
+            for (let i = 1; i < snake1.body.length; i++) {
+                if (head1.x === snake1.body[i].x && head1.y === snake1.body[i].y) {
+                    this.killSnake(snake1, `${snake1Name} đụng thân mình!`);
+                    return;
+                }
             }
-        }
-        
-        // Kiểm tra người chơi đụng thân bot (THUA)
-        for (let i = 0; i < this.bot.body.length; i++) {
-            if (playerHead.x === this.bot.body[i].x && 
-                playerHead.y === this.bot.body[i].y) {
-                this.gameOver('bot', 'Người chơi đụng vào rắn Bot!');
-                return;
+            
+            // Đụng các rắn khác
+            const otherSnakes = [
+                {snake: this.player, name: 'Người chơi 1'},
+                {snake: this.bot, name: 'Bot'},
+                {snake: this.player2, name: 'Người chơi 2'}
+            ].filter(s => s.snake && s.snake !== snake1 && s.snake.alive);
+            
+            for (const other of otherSnakes) {
+                for (let i = 0; i < other.snake.body.length; i++) {
+                    if (head1.x === other.snake.body[i].x && head1.y === other.snake.body[i].y) {
+                        this.killSnake(snake1, `${snake1Name} đụng vào ${other.name}!`);
+                        return;
+                    }
+                }
             }
-        }
+        };
         
-        // Kiểm tra bot đụng thân người chơi (THUA)
-        for (let i = 0; i < this.player.body.length; i++) {
-            if (botHead.x === this.player.body[i].x && 
-                botHead.y === this.player.body[i].y) {
-                this.gameOver('player', 'Bot đụng vào rắn Người chơi!');
-                return;
-            }
+        // Kiểm tra từng rắn
+        checkSnakeCollision(this.player, 'Người chơi 1', 'player');
+        checkSnakeCollision(this.bot, 'Bot', 'bot');
+        if (this.player2) {
+            checkSnakeCollision(this.player2, 'Người chơi 2', 'player3');
         }
         
         // Kiểm tra ăn thức ăn
-        this.checkFoodCollision(this.player, 'player');
-        this.checkFoodCollision(this.bot, 'bot');
+        if (this.player.alive) this.checkFoodCollision(this.player, 'player');
+        if (this.bot.alive) this.checkFoodCollision(this.bot, 'bot');
+        if (this.player2 && this.player2.alive) this.checkFoodCollision(this.player2, 'player3');
+    }
+    
+    killSnake(snake, reason) {
+        snake.alive = false;
+        
+        // Biến thân rắn thành thức ăn
+        snake.body.forEach(segment => {
+            // Random xem có phải correct food không
+            const isCorrect = Math.random() > 0.5;
+            let label;
+            
+            if (isCorrect) {
+                label = this.currentTopic.correct[Math.floor(Math.random() * this.currentTopic.correct.length)];
+            } else {
+                const wrongItems = ALL_ITEMS.filter(item => !this.currentTopic.correct.includes(item));
+                label = wrongItems[Math.floor(Math.random() * wrongItems.length)];
+            }
+            
+            this.foods.push({
+                x: segment.x,
+                y: segment.y,
+                isCorrect,
+                label
+            });
+        });
+        
+        // Đặt thời gian hồi sinh sau 3 giây
+        snake.respawnTime = Date.now() + 3000;
+        
+        // Cập nhật UI
+        const type = snake === this.player ? 'player' : 'bot';
+        document.getElementById(`${type}-status`).textContent = '💀 Hồi sinh sau 3s...';
+        
+        console.log(reason);
+    }
+    
+    respawnSnake(snake, type) {
+        // Tìm vị trí hồi sinh an toàn
+        let x, y;
+        let attempts = 0;
+        let safePosition = false;
+        
+        do {
+            x = Math.floor(Math.random() * (CONFIG.GRID_SIZE - 4)) + 2; // Đảm bảo có chỗ cho 3 đốt
+            y = Math.floor(Math.random() * CONFIG.GRID_SIZE);
+            attempts++;
+            
+            // Kiểm tra cả 3 đốt đều an toàn
+            safePosition = !this.isOccupied(x, y) && 
+                          !this.isOccupied(x - 1, y) && 
+                          !this.isOccupied(x - 2, y);
+            
+        } while (!safePosition && attempts < 100);
+        
+        if (attempts >= 100) {
+            // Không tìm được vị trí, thử lại sau
+            snake.respawnTime = Date.now() + 1000;
+            return;
+        }
+        
+        // Hồi sinh với 3 đốt
+        snake.body = [
+            {x: x, y: y},
+            {x: x - 1, y: y},
+            {x: x - 2, y: y}
+        ];
+        snake.direction = {x: 1, y: 0};
+        snake.nextDirection = {x: 1, y: 0};
+        snake.alive = true;
+        snake.respawnTime = 0;
+        snake.stunned = false;
+        
+        // Thêm bảo vệ 1 giây sau khi hồi sinh
+        snake.invincible = true;
+        snake.invincibleUntil = Date.now() + 1000;
+        
+        document.getElementById(`${type}-status`).textContent = '✨ Hồi sinh! (Bất tử 1s)';
+        setTimeout(() => {
+            snake.invincible = false;
+            document.getElementById(`${type}-status`).textContent = '';
+        }, 1000);
     }
     
     checkFoodCollision(snake, type) {
@@ -554,35 +742,6 @@ class Game {
                 this.foods.splice(i, 1);
                 this.updateUI();
                 break;
-            }
-        }
-    }
-    
-    checkSnakeVsSnake() {
-        const playerHead = this.player.body[0];
-        const botHead = this.bot.body[0];
-        
-        // Va chạm đầu với đầu
-        if (playerHead.x === botHead.x && playerHead.y === botHead.y) {
-            this.gameOver('Hai rắn đụng đầu!');
-            return;
-        }
-        
-        // Người chơi đụng thân bot
-        for (let i = 1; i < this.bot.body.length; i++) {
-            if (playerHead.x === this.bot.body[i].x && 
-                playerHead.y === this.bot.body[i].y) {
-                this.gameOver('Người chơi đụng thân Bot!');
-                return;
-            }
-        }
-        
-        // Bot đụng thân người chơi
-        for (let i = 1; i < this.player.body.length; i++) {
-            if (botHead.x === this.player.body[i].x && 
-                botHead.y === this.player.body[i].y) {
-                this.gameOver('Bot đụng thân Người chơi!');
-                return;
             }
         }
     }
@@ -657,6 +816,11 @@ class Game {
         document.getElementById('player-length').textContent = this.player.body.length;
         document.getElementById('bot-score').textContent = this.bot.score;
         document.getElementById('bot-length').textContent = this.bot.body.length;
+        
+        if (this.player2) {
+            document.getElementById('player3-score').textContent = this.player2.score;
+            document.getElementById('player3-length').textContent = this.player2.body.length;
+        }
     }
     
     draw() {
@@ -699,45 +863,50 @@ class Game {
             );
         });
         
-        // Vẽ rắn
-        this.drawSnake(this.player);
-        this.drawSnake(this.bot);
+        // Vẽ rắn (chỉ vẽ nếu còn sống)
+        if (this.player.alive) this.drawSnake(this.player);
+        if (this.bot.alive) this.drawSnake(this.bot);
+        if (this.player2 && this.player2.alive) this.drawSnake(this.player2);
     }
     
     drawSnake(snake) {
         snake.body.forEach((segment, index) => {
-            const alpha = snake.stunned ? 0.5 : 1;
+            // Hiệu ứng bất tử: nhấp nháy
+            let alpha = 1;
+            if (snake.stunned) {
+                alpha = 0.5;
+            } else if (snake.invincible && Date.now() < snake.invincibleUntil) {
+                alpha = Math.abs(Math.sin(Date.now() / 100)) * 0.5 + 0.5; // Nhấp nháy
+            }
+            
             this.ctx.globalAlpha = alpha;
             
             const x = segment.x * CONFIG.CELL_SIZE;
             const y = segment.y * CONFIG.CELL_SIZE;
             
             if (index === 0) {
-                // Đầu rắn - vẽ tròn và có mắt
+                // Đầu rắn - vẽ tròn
                 this.ctx.fillStyle = snake.color;
                 this.ctx.beginPath();
                 this.ctx.roundRect(x + 2, y + 2, CONFIG.CELL_SIZE - 4, CONFIG.CELL_SIZE - 4, 6);
                 this.ctx.fill();
                 
-                // Vẽ mắt
-                const eyeSize = 3;
-                const eyeOffset = 6;
-                this.ctx.fillStyle = 'white';
-                
-                // Xác định vị trí mắt dựa vào hướng di chuyển
-                if (snake.direction.x === 1) { // Sang phải
-                    this.ctx.fillRect(x + CONFIG.CELL_SIZE - eyeOffset - eyeSize, y + 6, eyeSize, eyeSize);
-                    this.ctx.fillRect(x + CONFIG.CELL_SIZE - eyeOffset - eyeSize, y + CONFIG.CELL_SIZE - 9, eyeSize, eyeSize);
-                } else if (snake.direction.x === -1) { // Sang trái
-                    this.ctx.fillRect(x + eyeOffset, y + 6, eyeSize, eyeSize);
-                    this.ctx.fillRect(x + eyeOffset, y + CONFIG.CELL_SIZE - 9, eyeSize, eyeSize);
-                } else if (snake.direction.y === -1) { // Lên trên
-                    this.ctx.fillRect(x + 6, y + eyeOffset, eyeSize, eyeSize);
-                    this.ctx.fillRect(x + CONFIG.CELL_SIZE - 9, y + eyeOffset, eyeSize, eyeSize);
-                } else { // Xuống dưới
-                    this.ctx.fillRect(x + 6, y + CONFIG.CELL_SIZE - eyeOffset - eyeSize, eyeSize, eyeSize);
-                    this.ctx.fillRect(x + CONFIG.CELL_SIZE - 9, y + CONFIG.CELL_SIZE - eyeOffset - eyeSize, eyeSize, eyeSize);
+                // Vẽ emoji trên đầu rắn
+                let emoji = '👨'; // Mặc định nam
+                if (snake === this.bot) {
+                    emoji = '🤖'; // Bot
+                } else if (snake === this.player2) {
+                    emoji = '👩'; // Nữ
                 }
+                
+                this.ctx.font = '16px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(
+                    emoji,
+                    x + CONFIG.CELL_SIZE / 2,
+                    y + CONFIG.CELL_SIZE / 2
+                );
             } else {
                 // Thân rắn - gradient và bo tròn
                 const gradient = this.ctx.createLinearGradient(x, y, x + CONFIG.CELL_SIZE, y + CONFIG.CELL_SIZE);
@@ -780,21 +949,29 @@ class Game {
         
         let resultText = '';
         if (winner === 'player') {
-            resultText = '🎉 Người chơi thắng!';
+            resultText = '🎉 👨 Người chơi 1 thắng!';
+        } else if (winner === 'player3') {
+            resultText = '🎉 👩 Người chơi 2 thắng!';
         } else if (winner === 'bot') {
-            resultText = '🤖 Bot thắng!';
+            resultText = '🤖 Bot AI thắng!';
         } else {
             resultText = '🤝 Hòa!';
         }
         
+        // Tạo bảng xếp hạng
+        let statsHTML = `<div><strong>Lý do kết thúc:</strong> ${reason}</div><div style="margin-top: 15px;">`;
+        
+        statsHTML += `<div>👨 Người chơi 1: ${this.player.score} điểm (${this.player.body.length} đốt)</div>`;
+        
+        if (this.player2) {
+            statsHTML += `<div>👩 Người chơi 2: ${this.player2.score} điểm (${this.player2.body.length} đốt)</div>`;
+        }
+        
+        statsHTML += `<div>🤖 Bot AI: ${this.bot.score} điểm (${this.bot.body.length} đốt)</div>`;
+        statsHTML += `</div>`;
+        
         title.textContent = resultText;
-        stats.innerHTML = `
-            <div><strong>Lý do kết thúc:</strong> ${reason}</div>
-            <div style="margin-top: 15px;">
-                <div>👤 Người chơi: ${this.player.score} điểm (${this.player.body.length} đốt)</div>
-                <div>🤖 Bot: ${this.bot.score} điểm (${this.bot.body.length} đốt)</div>
-            </div>
-        `;
+        stats.innerHTML = statsHTML;
         
         modal.classList.add('show');
     }
