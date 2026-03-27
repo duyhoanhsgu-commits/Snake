@@ -1,7 +1,7 @@
 // Cấu hình game
 const CONFIG = {
-    GRID_SIZE_X: 44, // Chiều rộng - tăng 1.25x
-    GRID_SIZE_Y: 22, // Chiều cao - tăng 1.25x
+    GRID_SIZE_X: 40, // Chiều rộng
+    GRID_SIZE_Y: 20, // Chiều cao (gấp đôi chiều rộng)
     CELL_SIZE: 20,
     GAME_SPEED: 150,
     GAME_DURATION: 60,
@@ -248,10 +248,10 @@ class Game {
             
             // Cập nhật UI theo chế độ
             if (this.gameMode === 'multi') {
-                document.getElementById('player3-section').style.display = 'block';
+                document.getElementById('player3-info').style.display = 'block';
                 document.getElementById('control-text').textContent = '⌨️ P1: ← ↑ → ↓ | P2: A W D S';
             } else {
-                document.getElementById('player3-section').style.display = 'none';
+                document.getElementById('player3-info').style.display = 'none';
                 document.getElementById('control-text').textContent = '⌨️ Điều khiển: Phím mũi tên ← ↑ → ↓';
             }
             

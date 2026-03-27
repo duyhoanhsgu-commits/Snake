@@ -11,7 +11,6 @@
     <div id="menuScreen" class="screen">
         <div class="menu-container">
             <h1 class="game-title">🐍 Rắn Tri Thức</h1>
-            <h2 class="game-subtitle">Cuộc Đua Phân Loại</h2>
             
             <div class="menu-content">
                 <p class="game-description">
@@ -73,11 +72,20 @@
             </div>
             
             <div class="game-info">
-                <div class="player-info player-blue">
-                    <div class="player-name">👤 Người chơi 1 (↑↓←→)</div>
-                    <div class="score">Điểm: <span id="player-score">0</span></div>
-                    <div class="length">Độ dài: <span id="player-length">3</span></div>
-                    <div id="player-status" class="status"></div>
+                <div class="player-info-combined player-blue-green">
+                    <div class="player-section">
+                        <div class="player-name">👤 Người chơi 1 (↑↓←→)</div>
+                        <div class="score">Điểm: <span id="player-score">0</span></div>
+                        <div class="length">Độ dài: <span id="player-length">3</span></div>
+                        <div id="player-status" class="status"></div>
+                    </div>
+                    
+                    <div id="player3-section" class="player-section player-divider" style="display: none;">
+                        <div class="player-name">👤 Người chơi 2 (WASD)</div>
+                        <div class="score">Điểm: <span id="player3-score">0</span></div>
+                        <div class="length">Độ dài: <span id="player3-length">3</span></div>
+                        <div id="player3-status" class="status"></div>
+                    </div>
                 </div>
                 
                 <div class="timer-panel">
@@ -93,22 +101,15 @@
                 </div>
             </div>
             
-            <div id="player3-info" class="player-info-extra player-green" style="display: none;">
-                <div class="player-name">👤 Người chơi 2 (WASD)</div>
-                <div class="score">Điểm: <span id="player3-score">0</span></div>
-                <div class="length">Độ dài: <span id="player3-length">3</span></div>
-                <div id="player3-status" class="status"></div>
-            </div>
-            
-            <canvas id="gameCanvas"></canvas>
-            
             <div class="controls">
+                <button id="pauseBtn" class="btn-pause">Tạm dừng</button>
                 <div class="control-hint">
                     <span id="control-text">⌨️ Điều khiển: Phím mũi tên ← ↑ → ↓</span>
                 </div>
-                <button id="pauseBtn" class="btn-pause">Tạm dừng</button>
                 <button id="backBtn" class="btn-back">Về menu</button>
             </div>
+            
+            <canvas id="gameCanvas"></canvas>
             
             <div class="legend">
                 <div class="legend-item">
