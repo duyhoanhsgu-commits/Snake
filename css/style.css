@@ -12,6 +12,13 @@ body {
     justify-content: center;
     align-items: center;
     padding: 20px;
+    overflow-x: hidden;
+}
+
+body.game-active {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
 }
 
 .screen {
@@ -70,12 +77,13 @@ body {
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     border: 3px solid transparent;
     border-radius: 15px;
-    padding: 25px;
+    padding: 20px;
     cursor: pointer;
     transition: all 0.3s;
     display: flex;
     align-items: center;
-    gap: 20px;
+    justify-content: center;
+    gap: 15px;
 }
 
 .difficulty-card:hover {
@@ -90,26 +98,13 @@ body {
 }
 
 .difficulty-icon {
-    font-size: 3em;
-    min-width: 60px;
+    font-size: 2.5em;
 }
 
 .difficulty-name {
-    font-size: 1.5em;
+    font-size: 1.3em;
     font-weight: bold;
-    min-width: 120px;
-    text-align: left;
-}
-
-.difficulty-details {
-    flex: 1;
-    text-align: left;
-    font-size: 0.95em;
-    line-height: 1.8;
-}
-
-.difficulty-card.active .difficulty-details {
-    color: rgba(255,255,255,0.9);
+    text-align: center;
 }
 
 .game-mode-selection {

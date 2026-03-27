@@ -1,7 +1,8 @@
 // Cấu hình game
 const CONFIG = {
-    GRID_SIZE: 20,
-    CELL_SIZE: 25,
+    GRID_SIZE_X: 40, // Chiều rộng
+    GRID_SIZE_Y: 20, // Chiều cao (gấp đôi chiều rộng)
+    CELL_SIZE: 20,
     GAME_SPEED: 150,
     GAME_DURATION: 60,
     FOOD_SPAWN_INTERVAL: 2000,
@@ -15,27 +16,30 @@ const CONFIG = {
 const DIFFICULTY_LEVELS = {
     easy: {
         name: "Dễ",
+        aiName: "🐍 Rắn AI Mới Vào Nghề",
         gameSpeed: 200,
         botErrorRate: 0.45,
         gameDuration: 60,
-        correctFoodInterval: 2000,  // 2s spawn 1 mồi đúng
-        wrongFoodInterval: 4000     // 4s spawn 1 mồi sai
+        correctFoodInterval: 2000,
+        wrongFoodInterval: 4000
     },
     medium: {
         name: "Trung bình",
+        aiName: "🐍 Rắn AI Chuyên Nghiệp",
         gameSpeed: 140,
         botErrorRate: 0.20,
         gameDuration: 60,
-        correctFoodInterval: 2000,  // 2s spawn 1 mồi đúng
-        wrongFoodInterval: 4000     // 4s spawn 1 mồi sai
+        correctFoodInterval: 2000,
+        wrongFoodInterval: 4000
     },
     hard: {
         name: "Khó",
+        aiName: "🐍 Rắn AI Huyền Thoại",
         gameSpeed: 100,
         botErrorRate: 0.05,
         gameDuration: 60,
-        correctFoodInterval: 1500,  // 1.5s spawn 1 mồi đúng
-        wrongFoodInterval: 1500     // 1.5s spawn 1 mồi sai (nhiều bẫy)
+        correctFoodInterval: 1500,
+        wrongFoodInterval: 1500
     }
 };
 
@@ -90,8 +94,8 @@ class Game {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
-        this.canvas.width = CONFIG.GRID_SIZE * CONFIG.CELL_SIZE;
-        this.canvas.height = CONFIG.GRID_SIZE * CONFIG.CELL_SIZE;
+        this.canvas.width = CONFIG.GRID_SIZE_X * CONFIG.CELL_SIZE;
+        this.canvas.height = CONFIG.GRID_SIZE_Y * CONFIG.CELL_SIZE;
         
         this.difficulty = 'medium';
         this.gameMode = 'single'; // 'single' hoặc 'multi'
@@ -108,6 +112,8 @@ class Game {
         const customTime = parseInt(document.getElementById('gameTime')?.value) || 60;
         this.timeLeft = customTime;
         
+        this.respawnMarkers = []; // Mảng lưu vị trí hồi sinh
+        
         // Khởi tạo rắn người chơi 1 (màu xanh)
         this.player = {
             body: [{x: 5, y: 10}, {x: 4, y: 10}, {x: 3, y: 10}],
@@ -120,7 +126,9 @@ class Game {
             alive: true,
             respawnTime: 0,
             invincible: false,
-            invincibleUntil: 0
+            invincibleUntil: 0,
+            growing: false,
+            growUntil: 0
         };
         
         // Khởi tạo rắn bot (màu đỏ) - luôn có
@@ -136,7 +144,9 @@ class Game {
             isBot: true,
             respawnTime: 0,
             invincible: false,
-            invincibleUntil: 0
+            invincibleUntil: 0,
+            growing: false,
+            growUntil: 0
         };
         
         // Khởi tạo rắn người chơi 2 (màu xanh lá) - chỉ khi chế độ 2 người
@@ -152,7 +162,9 @@ class Game {
                 alive: true,
                 respawnTime: 0,
                 invincible: false,
-                invincibleUntil: 0
+                invincibleUntil: 0,
+                growing: false,
+                growUntil: 0
             };
         } else {
             this.player2 = null;
@@ -171,6 +183,12 @@ class Game {
             if (!this.gameRunning || this.gamePaused) return;
             
             const key = e.key.toLowerCase();
+            
+            // Ngăn scroll trang khi nhấn phím mũi tên hoặc WASD
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key) || 
+                ['w', 'a', 's', 'd'].includes(key)) {
+                e.preventDefault();
+            }
             
             // Điều khiển người chơi 1 (Arrow keys)
             if (this.player.alive) {
@@ -224,6 +242,10 @@ class Game {
             this.selectNewTopic();
             this.reset();
             
+            // Cập nhật tên AI theo cấp độ
+            const level = DIFFICULTY_LEVELS[this.difficulty];
+            document.getElementById('player2-name').textContent = level.aiName;
+            
             // Cập nhật UI theo chế độ
             if (this.gameMode === 'multi') {
                 document.getElementById('player3-info').style.display = 'block';
@@ -273,6 +295,7 @@ class Game {
     showMenu() {
         document.getElementById('gameScreen').style.display = 'none';
         document.getElementById('menuScreen').style.display = 'flex';
+        document.body.classList.remove('game-active');
         this.reset();
     }
     
@@ -288,11 +311,17 @@ class Game {
         if (this.wrongFoodSpawner) clearInterval(this.wrongFoodSpawner);
         if (this.timer) clearInterval(this.timer);
         if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
+        
+        // Bỏ cố định màn hình
+        document.body.classList.remove('game-active');
     }
     
     start() {
         this.gameRunning = true;
         const level = DIFFICULTY_LEVELS[this.difficulty];
+        
+        // Cố định màn hình khi chơi
+        document.body.classList.add('game-active');
         
         document.getElementById('objective').textContent = this.currentTopic.name;
         
@@ -521,8 +550,8 @@ class Game {
     
     wouldCollide(pos, snake) {
         // Kiểm tra va chạm tường
-        if (pos.x < 0 || pos.x >= CONFIG.GRID_SIZE || 
-            pos.y < 0 || pos.y >= CONFIG.GRID_SIZE) {
+        if (pos.x < 0 || pos.x >= CONFIG.GRID_SIZE_X || 
+            pos.y < 0 || pos.y >= CONFIG.GRID_SIZE_Y) {
             return true;
         }
         
@@ -596,8 +625,8 @@ class Game {
             const head1 = snake1.body[0];
             
             // Đụng tường
-            if (head1.x < 0 || head1.x >= CONFIG.GRID_SIZE || 
-                head1.y < 0 || head1.y >= CONFIG.GRID_SIZE) {
+            if (head1.x < 0 || head1.x >= CONFIG.GRID_SIZE_X || 
+                head1.y < 0 || head1.y >= CONFIG.GRID_SIZE_Y) {
                 this.killSnake(snake1, `${snake1Name} đụng tường!`);
                 return;
             }
@@ -613,7 +642,7 @@ class Game {
             // Đụng các rắn khác
             const otherSnakes = [
                 {snake: this.player, name: 'Người chơi 1'},
-                {snake: this.bot, name: 'Bot'},
+                {snake: this.bot, name: 'AI'},
                 {snake: this.player2, name: 'Người chơi 2'}
             ].filter(s => s.snake && s.snake !== snake1 && s.snake.alive);
             
@@ -629,7 +658,7 @@ class Game {
         
         // Kiểm tra từng rắn
         checkSnakeCollision(this.player, 'Người chơi 1', 'player');
-        checkSnakeCollision(this.bot, 'Bot', 'bot');
+        checkSnakeCollision(this.bot, 'AI', 'bot');
         if (this.player2) {
             checkSnakeCollision(this.player2, 'Người chơi 2', 'player3');
         }
@@ -664,39 +693,76 @@ class Game {
             });
         });
         
-        // Đặt thời gian hồi sinh sau 3 giây
-        snake.respawnTime = Date.now() + 3000;
-        
-        // Cập nhật UI
-        const type = snake === this.player ? 'player' : 'bot';
-        document.getElementById(`${type}-status`).textContent = '💀 Hồi sinh sau 3s...';
-        
-        console.log(reason);
-    }
-    
-    respawnSnake(snake, type) {
-        // Tìm vị trí hồi sinh an toàn
+        // Tìm vị trí hồi sinh ngay
         let x, y;
         let attempts = 0;
         let safePosition = false;
         
         do {
-            x = Math.floor(Math.random() * (CONFIG.GRID_SIZE - 4)) + 2; // Đảm bảo có chỗ cho 3 đốt
-            y = Math.floor(Math.random() * CONFIG.GRID_SIZE);
+            x = Math.floor(Math.random() * (CONFIG.GRID_SIZE_X - 4)) + 2;
+            y = Math.floor(Math.random() * CONFIG.GRID_SIZE_Y);
             attempts++;
             
-            // Kiểm tra cả 3 đốt đều an toàn
             safePosition = !this.isOccupied(x, y) && 
                           !this.isOccupied(x - 1, y) && 
                           !this.isOccupied(x - 2, y);
             
         } while (!safePosition && attempts < 100);
         
-        if (attempts >= 100) {
-            // Không tìm được vị trí, thử lại sau
-            snake.respawnTime = Date.now() + 1000;
-            return;
+        if (attempts < 100) {
+            // Lưu vị trí hồi sinh
+            snake.respawnX = x;
+            snake.respawnY = y;
+            
+            // Thêm marker vệt sáng
+            this.respawnMarkers.push({
+                x: x,
+                y: y,
+                color: snake.color,
+                createdAt: Date.now(),
+                snake: snake
+            });
         }
+        
+        // Đặt thời gian hồi sinh sau 3 giây
+        snake.respawnTime = Date.now() + 3000;
+        
+        // Cập nhật UI
+        const type = snake === this.player ? 'player' : (snake === this.player2 ? 'player3' : 'bot');
+        document.getElementById(`${type}-status`).textContent = '💀 Hồi sinh sau 3s...';
+        
+        console.log(reason);
+    }
+    
+    respawnSnake(snake, type) {
+        // Dùng vị trí đã lưu hoặc tìm vị trí mới
+        let x = snake.respawnX;
+        let y = snake.respawnY;
+        
+        if (x === undefined || y === undefined) {
+            // Tìm vị trí hồi sinh an toàn
+            let attempts = 0;
+            let safePosition = false;
+            
+            do {
+                x = Math.floor(Math.random() * (CONFIG.GRID_SIZE_X - 4)) + 2;
+                y = Math.floor(Math.random() * CONFIG.GRID_SIZE_Y);
+                attempts++;
+                
+                safePosition = !this.isOccupied(x, y) && 
+                              !this.isOccupied(x - 1, y) && 
+                              !this.isOccupied(x - 2, y);
+                
+            } while (!safePosition && attempts < 100);
+            
+            if (attempts >= 100) {
+                snake.respawnTime = Date.now() + 1000;
+                return;
+            }
+        }
+        
+        // Xóa marker
+        this.respawnMarkers = this.respawnMarkers.filter(m => m.snake !== snake);
         
         // Hồi sinh với 3 đốt
         snake.body = [
@@ -709,6 +775,10 @@ class Game {
         snake.alive = true;
         snake.respawnTime = 0;
         snake.stunned = false;
+        snake.growing = false;
+        snake.growUntil = 0;
+        snake.respawnX = undefined;
+        snake.respawnY = undefined;
         
         // Thêm bảo vệ 1 giây sau khi hồi sinh
         snake.invincible = true;
@@ -728,9 +798,11 @@ class Game {
             const food = this.foods[i];
             if (head.x === food.x && head.y === food.y) {
                 if (food.isCorrect) {
-                    // Ăn đúng
+                    // Ăn đúng - hiệu ứng to lên
                     snake.score += CONFIG.CORRECT_POINTS;
                     snake.body.push({...snake.body[snake.body.length - 1]});
+                    snake.growing = true;
+                    snake.growUntil = Date.now() + 200; // Hiệu ứng 0.2s
                 } else {
                     // Ăn sai - bị phạt
                     snake.score += CONFIG.WRONG_PENALTY;
@@ -758,8 +830,8 @@ class Game {
         let attempts = 0;
         
         do {
-            x = Math.floor(Math.random() * CONFIG.GRID_SIZE);
-            y = Math.floor(Math.random() * CONFIG.GRID_SIZE);
+            x = Math.floor(Math.random() * CONFIG.GRID_SIZE_X);
+            y = Math.floor(Math.random() * CONFIG.GRID_SIZE_Y);
             attempts++;
         } while (this.isOccupied(x, y) && attempts < 100);
         
@@ -830,17 +902,50 @@ class Game {
         
         // Vẽ lưới
         this.ctx.strokeStyle = '#1a1a2e';
-        for (let i = 0; i <= CONFIG.GRID_SIZE; i++) {
+        // Vẽ lưới dọc
+        for (let i = 0; i <= CONFIG.GRID_SIZE_X; i++) {
             this.ctx.beginPath();
             this.ctx.moveTo(i * CONFIG.CELL_SIZE, 0);
             this.ctx.lineTo(i * CONFIG.CELL_SIZE, this.canvas.height);
             this.ctx.stroke();
-            
+        }
+        // Vẽ lưới ngang
+        for (let i = 0; i <= CONFIG.GRID_SIZE_Y; i++) {
             this.ctx.beginPath();
             this.ctx.moveTo(0, i * CONFIG.CELL_SIZE);
             this.ctx.lineTo(this.canvas.width, i * CONFIG.CELL_SIZE);
             this.ctx.stroke();
         }
+        
+        // Vẽ marker hồi sinh (vệt sáng)
+        const now = Date.now();
+        this.respawnMarkers.forEach(marker => {
+            const elapsed = now - marker.createdAt;
+            const progress = elapsed / 3000; // 3 giây
+            
+            if (progress < 1) {
+                // Hiệu ứng nhấp nháy
+                const alpha = Math.abs(Math.sin(elapsed / 200)) * 0.7 + 0.3;
+                this.ctx.globalAlpha = alpha;
+                
+                // Vẽ vệt sáng (3 ô)
+                for (let i = 0; i < 3; i++) {
+                    const x = (marker.x - i) * CONFIG.CELL_SIZE;
+                    const y = marker.y * CONFIG.CELL_SIZE;
+                    
+                    // Viền sáng
+                    this.ctx.strokeStyle = marker.color;
+                    this.ctx.lineWidth = 3;
+                    this.ctx.strokeRect(x + 2, y + 2, CONFIG.CELL_SIZE - 4, CONFIG.CELL_SIZE - 4);
+                    
+                    // Nền mờ
+                    this.ctx.fillStyle = marker.color + '40'; // 40 = 25% opacity
+                    this.ctx.fillRect(x + 2, y + 2, CONFIG.CELL_SIZE - 4, CONFIG.CELL_SIZE - 4);
+                }
+                
+                this.ctx.globalAlpha = 1;
+            }
+        });
         
         // Vẽ thức ăn
         this.foods.forEach(food => {
@@ -884,22 +989,32 @@ class Game {
             const x = segment.x * CONFIG.CELL_SIZE;
             const y = segment.y * CONFIG.CELL_SIZE;
             
+            // Hiệu ứng to lên khi ăn mồi
+            let scale = 1;
+            if (snake.growing && Date.now() < snake.growUntil) {
+                const progress = (snake.growUntil - Date.now()) / 200;
+                scale = 1 + (progress * 0.3); // To lên 30%
+            }
+            
+            const cellSize = CONFIG.CELL_SIZE * scale;
+            const offset = (CONFIG.CELL_SIZE - cellSize) / 2;
+            
             if (index === 0) {
                 // Đầu rắn - vẽ tròn
                 this.ctx.fillStyle = snake.color;
                 this.ctx.beginPath();
-                this.ctx.roundRect(x + 2, y + 2, CONFIG.CELL_SIZE - 4, CONFIG.CELL_SIZE - 4, 6);
+                this.ctx.roundRect(x + offset + 2, y + offset + 2, cellSize - 4, cellSize - 4, 6);
                 this.ctx.fill();
                 
                 // Vẽ emoji trên đầu rắn
                 let emoji = '👨'; // Mặc định nam
                 if (snake === this.bot) {
-                    emoji = '🤖'; // Bot
+                    emoji = '🤖'; // AI
                 } else if (snake === this.player2) {
                     emoji = '👩'; // Nữ
                 }
                 
-                this.ctx.font = '16px Arial';
+                this.ctx.font = `${14 * scale}px Arial`;
                 this.ctx.textAlign = 'center';
                 this.ctx.textBaseline = 'middle';
                 this.ctx.fillText(
@@ -909,13 +1024,13 @@ class Game {
                 );
             } else {
                 // Thân rắn - gradient và bo tròn
-                const gradient = this.ctx.createLinearGradient(x, y, x + CONFIG.CELL_SIZE, y + CONFIG.CELL_SIZE);
+                const gradient = this.ctx.createLinearGradient(x, y, x + cellSize, y + cellSize);
                 gradient.addColorStop(0, snake.color);
                 gradient.addColorStop(1, this.adjustBrightness(snake.color, -20));
                 
                 this.ctx.fillStyle = gradient;
                 this.ctx.beginPath();
-                this.ctx.roundRect(x + 3, y + 3, CONFIG.CELL_SIZE - 6, CONFIG.CELL_SIZE - 6, 4);
+                this.ctx.roundRect(x + offset + 3, y + offset + 3, cellSize - 6, cellSize - 6, 4);
                 this.ctx.fill();
                 
                 // Viền sáng
@@ -953,7 +1068,7 @@ class Game {
         } else if (winner === 'player3') {
             resultText = '🎉 👩 Người chơi 2 thắng!';
         } else if (winner === 'bot') {
-            resultText = '🤖 Bot AI thắng!';
+            resultText = '🤖 AI thắng!';
         } else {
             resultText = '🤝 Hòa!';
         }
@@ -967,7 +1082,7 @@ class Game {
             statsHTML += `<div>👩 Người chơi 2: ${this.player2.score} điểm (${this.player2.body.length} đốt)</div>`;
         }
         
-        statsHTML += `<div>🤖 Bot AI: ${this.bot.score} điểm (${this.bot.body.length} đốt)</div>`;
+        statsHTML += `<div>🤖 AI: ${this.bot.score} điểm (${this.bot.body.length} đốt)</div>`;
         statsHTML += `</div>`;
         
         title.textContent = resultText;
