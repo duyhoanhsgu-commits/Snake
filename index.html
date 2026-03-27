@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rắn Tri Thức: Cuộc Đua Phân Loại</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Màn hình chọn cấp độ -->
+    <div id="menuScreen" class="screen">
+        <div class="menu-container">
+            <h1 class="game-title">🐍 Rắn Tri Thức</h1>
+            <h2 class="game-subtitle">Cuộc Đua Phân Loại</h2>
+            
+            <div class="menu-content">
+                <p class="game-description">
+                    Đối đầu với Bot AI thông minh! Ăn đúng thức ăn theo chủ đề, tránh bẫy sai để ghi điểm.
+                </p>
+                
+                <div class="difficulty-selection">
+                    <h3>Chọn cấp độ:</h3>
+                    
+                    <div class="difficulty-card" data-level="easy">
+                        <div class="difficulty-icon">😊</div>
+                        <div class="difficulty-name">Dễ</div>
+                        <div class="difficulty-details">
+                            <div>⏱️ 60 giây</div>
+                            <div>🤖 Bot Dễ</div>
+                            <div>🍎 Thức ăn xuất hiện chậm</div>
+                        </div>
+                    </div>
+                    
+                    <div class="difficulty-card active" data-level="medium">
+                        <div class="difficulty-icon">😐</div>
+                        <div class="difficulty-name">Trung bình</div>
+                        <div class="difficulty-details">
+                            <div>⏱️ 60 giây</div>
+                            <div>🤖 Bot trung bình</div>
+                            <div>🍎 Tốc độ vừa phải</div>
+                        </div>
+                    </div>
+                    
+                    <div class="difficulty-card" data-level="hard">
+                        <div class="difficulty-icon">😈</div>
+                        <div class="difficulty-name">Khó</div>
+                        <div class="difficulty-details">
+                            <div>⏱️ 60 giây</div>
+                            <div>🤖 Bot thông minh, nhanh</div>
+                            <div>🍎 Thức ăn xuất hiện nhanh, tốc độ chớp nhoáng</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="playBtn" class="btn-play">Bắt đầu chơi</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Màn hình chơi game -->
+    <div id="gameScreen" class="screen" style="display: none;">
+        <div class="game-container">
+            <div class="header">
+                <h1>🐍 Rắn Tri Thức: Cuộc Đua Phân Loại</h1>
+                <div class="objective-panel">
+                    <div class="objective-label">🎯 Mục tiêu:</div>
+                    <div id="objective" class="objective-text"></div>
+                </div>
+            </div>
+            
+            <div class="game-info">
+                <div class="player-info player-blue">
+                    <div class="player-name">👤 Người chơi</div>
+                    <div class="score">Điểm: <span id="player-score">0</span></div>
+                    <div class="length">Độ dài: <span id="player-length">3</span></div>
+                    <div id="player-status" class="status"></div>
+                </div>
+                
+                <div class="timer-panel">
+                    <div class="timer-label">⏱️ Thời gian</div>
+                    <div id="timer" class="timer">60</div>
+                </div>
+                
+                <div class="player-info player-red">
+                    <div class="player-name">🤖 Bot AI</div>
+                    <div class="score">Điểm: <span id="bot-score">0</span></div>
+                    <div class="length">Độ dài: <span id="bot-length">3</span></div>
+                    <div id="bot-status" class="status"></div>
+                </div>
+            </div>
+            
+            <canvas id="gameCanvas"></canvas>
+            
+            <div class="controls">
+                <div class="control-hint">
+                    <span>⌨️ Điều khiển: Phím mũi tên ← ↑ → ↓</span>
+                </div>
+                <button id="pauseBtn" class="btn-pause">Tạm dừng</button>
+                <button id="backBtn" class="btn-back">Về menu</button>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #4CAF50;"></span>
+                    <span>Thức ăn đúng (+10 điểm)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #f44336;"></span>
+                    <span>Bẫy sai (-15 điểm, choáng 2s)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal kết thúc game -->
+    <div id="gameOverModal" class="modal">
+        <div class="modal-content">
+            <h2 id="gameOverTitle"></h2>
+            <div id="gameOverStats"></div>
+            <button id="restartBtn" class="btn-restart">Chơi lại</button>
+            <button id="menuBtn" class="btn-menu">Về menu</button>
+        </div>
+    </div>
+    
+    <!-- Modal hiển thị chủ đề -->
+    <div id="topicModal" class="modal">
+        <div class="modal-content topic-modal">
+            <div class="topic-icon">🎯</div>
+            <h2>Chủ đề của bạn</h2>
+            <div id="topicDisplay" class="topic-display"></div>
+            <p class="topic-hint">Hãy nhớ kỹ và chỉ ăn đúng mục tiêu!</p>
+            <button id="startGameBtn" class="btn-start-game">Bắt đầu ngay! 🚀</button>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>
