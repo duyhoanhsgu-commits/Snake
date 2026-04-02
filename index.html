@@ -55,6 +55,16 @@
                     <input type="number" id="gameTime" min="30" max="300" value="60" step="10">
                 </div>
                 
+                <div class="speed-setting">
+                    <label for="gameSpeed">⚡ Tốc độ game:</label>
+                    <div class="speed-slider-container">
+                        <span class="speed-label">Chậm</span>
+                        <input type="range" id="gameSpeed" min="1" max="5" value="3" step="1">
+                        <span class="speed-label">Nhanh</span>
+                    </div>
+                    <div class="speed-value">Tốc độ: <span id="speedDisplay">Trung bình</span></div>
+                </div>
+                
                 <button id="playBtn" class="btn-play">Bắt đầu chơi</button>
             </div>
         </div>
@@ -95,9 +105,9 @@
                 
                 <div class="player-info player-red">
                     <div class="player-name" id="player2-name">🤖 AI</div>
-                    <div class="score">Điểm: <span id="bot-score">0</span></div>
-                    <div class="length">Độ dài: <span id="bot-length">3</span></div>
-                    <div id="bot-status" class="status"></div>
+                    <div class="score">Điểm: <span id="ai-score">0</span></div>
+                    <div class="length">Độ dài: <span id="ai-length">3</span></div>
+                    <div id="ai-status" class="status"></div>
                 </div>
             </div>
             

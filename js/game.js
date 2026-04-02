@@ -1,3 +1,5 @@
+console.log('=== FILE GAME.JS BẮT ĐẦU LOAD ===');
+
 // Cấu hình game
 const CONFIG = {
     GRID_SIZE_X: 44, // Chiều rộng - tăng 1.25x
@@ -18,7 +20,7 @@ const DIFFICULTY_LEVELS = {
         name: "Dễ",
         aiName: "🐍 Rắn AI Mới Vào Nghề",
         gameSpeed: 200,
-        botErrorRate: 0.45,
+        aiErrorRate: 0.45,
         gameDuration: 60,
         correctFoodInterval: 2000,
         wrongFoodInterval: 4000
@@ -27,7 +29,7 @@ const DIFFICULTY_LEVELS = {
         name: "Trung bình",
         aiName: "🐍 Rắn AI Chuyên Nghiệp",
         gameSpeed: 140,
-        botErrorRate: 0.20,
+        aiErrorRate: 0.20,
         gameDuration: 60,
         correctFoodInterval: 2000,
         wrongFoodInterval: 4000
@@ -36,7 +38,7 @@ const DIFFICULTY_LEVELS = {
         name: "Khó",
         aiName: "🐍 Rắn AI Huyền Thoại",
         gameSpeed: 100,
-        botErrorRate: 0.05,
+        aiErrorRate: 0.05,
         gameDuration: 60,
         correctFoodInterval: 1500,
         wrongFoodInterval: 1500
@@ -117,6 +119,7 @@ class Game {
         // Khởi tạo rắn người chơi 1 (màu xanh)
         this.player = {
             body: [{x: 5, y: 10}, {x: 4, y: 10}, {x: 3, y: 10}],
+            foodData: [null, null, null], // Lưu thông tin thức ăn cho mỗi đốt
             direction: {x: 1, y: 0},
             nextDirection: {x: 1, y: 0},
             score: 0,
@@ -131,9 +134,10 @@ class Game {
             growUntil: 0
         };
         
-        // Khởi tạo rắn bot (màu đỏ) - luôn có
-        this.bot = {
+        // Khởi tạo rắn ai (màu đỏ) - luôn có
+        this.ai = {
             body: [{x: 15, y: 10}, {x: 16, y: 10}, {x: 17, y: 10}],
+            foodData: [null, null, null], // Lưu thông tin thức ăn cho mỗi đốt
             direction: {x: -1, y: 0},
             nextDirection: {x: -1, y: 0},
             score: 0,
@@ -153,6 +157,7 @@ class Game {
         if (this.gameMode === 'multi') {
             this.player2 = {
                 body: [{x: 10, y: 5}, {x: 10, y: 6}, {x: 10, y: 7}],
+                foodData: [null, null, null], // Lưu thông tin thức ăn cho mỗi đốt
                 direction: {x: 0, y: -1},
                 nextDirection: {x: 0, y: -1},
                 score: 0,
@@ -373,19 +378,19 @@ class Game {
             this.respawnSnake(this.player, 'player');
         }
         
-        // Cập nhật rắn bot (nếu còn sống) - luôn là AI
-        if (this.bot.alive) {
-            if (!this.bot.stunned || now >= this.bot.stunnedUntil) {
-                if (this.bot.stunned) {
-                    this.bot.stunned = false;
-                    document.getElementById('bot-status').textContent = '';
+        // Cập nhật rắn ai (nếu còn sống) - luôn là AI
+        if (this.ai.alive) {
+            if (!this.ai.stunned || now >= this.ai.stunnedUntil) {
+                if (this.ai.stunned) {
+                    this.ai.stunned = false;
+                    document.getElementById('ai-status').textContent = '';
                 }
-                this.updateBotAI();
-                this.moveSnake(this.bot);
+                this.updateAI();
+                this.moveSnake(this.ai);
             }
-        } else if (this.bot.respawnTime > 0 && now >= this.bot.respawnTime) {
+        } else if (this.ai.respawnTime > 0 && now >= this.ai.respawnTime) {
             // Hồi sinh sau 3 giây
-            this.respawnSnake(this.bot, 'bot');
+            this.respawnSnake(this.ai, 'ai');
         }
         
         // Cập nhật rắn người chơi 2 (nếu có và còn sống)
@@ -418,19 +423,19 @@ class Game {
         snake.body.pop();
     }
     
-    updateBotAI() {
-        const head = this.bot.body[0];
+    updateAI() {
+        const head = this.ai.body[0];
         const level = DIFFICULTY_LEVELS[this.difficulty];
         
         // Luôn kiểm tra hướng hiện tại có an toàn không
         const currentNextHead = {
-            x: head.x + this.bot.direction.x,
-            y: head.y + this.bot.direction.y
+            x: head.x + this.ai.direction.x,
+            y: head.y + this.ai.direction.y
         };
         
         // Nếu hướng hiện tại nguy hiểm, tìm hướng an toàn ngay
-        if (this.wouldCollide(currentNextHead, this.bot)) {
-            this.findSafeDirection(this.bot);
+        if (this.wouldCollide(currentNextHead, this.ai)) {
+            this.findSafeDirection(this.ai);
             return;
         }
         
@@ -441,8 +446,8 @@ class Game {
         for (const food of this.foods) {
             const dist = Math.abs(food.x - head.x) + Math.abs(food.y - head.y);
             
-            // Bot có thể nhận diện sai (ảo giác)
-            const shouldMistake = Math.random() < level.botErrorRate;
+            // AI có thể nhận diện sai (ảo giác)
+            const shouldMistake = Math.random() < level.aiErrorRate;
             const perceivedCorrect = shouldMistake ? !food.isCorrect : food.isCorrect;
             
             // Tính điểm cho mỗi thức ăn
@@ -462,7 +467,7 @@ class Game {
         // Nếu không có target tốt hoặc target là wrong, chỉ di chuyển an toàn
         if (!bestTarget || bestScore < 0) {
             // Tìm hướng an toàn và tránh xa wrong food
-            this.findSafeDirectionAvoidWrong(this.bot);
+            this.findSafeDirectionAvoidWrong(this.ai);
             return;
         }
         
@@ -488,8 +493,8 @@ class Game {
         // Thử từng hướng ưu tiên
         for (const dir of preferredDirs) {
             // Không được quay đầu 180 độ
-            if ((dir.x !== 0 && this.bot.direction.x !== 0 && dir.x !== this.bot.direction.x) || 
-                (dir.y !== 0 && this.bot.direction.y !== 0 && dir.y !== this.bot.direction.y)) {
+            if ((dir.x !== 0 && this.ai.direction.x !== 0 && dir.x !== this.ai.direction.x) || 
+                (dir.y !== 0 && this.ai.direction.y !== 0 && dir.y !== this.ai.direction.y)) {
                 continue;
             }
             
@@ -499,14 +504,14 @@ class Game {
             };
             
             // Kiểm tra an toàn và không đi vào wrong food
-            if (!this.wouldCollide(nextHead, this.bot) && !this.isWrongFood(nextHead)) {
-                this.bot.direction = dir;
+            if (!this.wouldCollide(nextHead, this.ai) && !this.isWrongFood(nextHead)) {
+                this.ai.direction = dir;
                 return;
             }
         }
         
         // Nếu không tìm được hướng tốt, tìm bất kỳ hướng an toàn nào
-        this.findSafeDirection(this.bot);
+        this.findSafeDirection(this.ai);
     }
     
     isWrongFood(pos) {
@@ -563,7 +568,7 @@ class Game {
         }
         
         // Kiểm tra va chạm với tất cả rắn khác
-        const otherSnakes = [this.player, this.bot, this.player2].filter(s => s && s !== snake && s.alive);
+        const otherSnakes = [this.player, this.ai, this.player2].filter(s => s && s !== snake && s.alive);
         for (const other of otherSnakes) {
             for (let i = 0; i < other.body.length; i++) {
                 if (pos.x === other.body[i].x && pos.y === other.body[i].y) {
@@ -580,7 +585,7 @@ class Game {
             {x: 0, y: -1}, {x: 0, y: 1}, {x: -1, y: 0}, {x: 1, y: 0}
         ];
         
-        // Sắp xếp ngẫu nhiên để bot không đi theo pattern cố định
+        // Sắp xếp ngẫu nhiên để ai không đi theo pattern cố định
         directions.sort(() => Math.random() - 0.5);
         
         for (const dir of directions) { 
@@ -606,10 +611,10 @@ class Game {
     }
     
     checkCollisions() {
-        if (!this.player.alive && !this.bot.alive && (!this.player2 || !this.player2.alive)) return;
+        if (!this.player.alive && !this.ai.alive && (!this.player2 || !this.player2.alive)) return;
         
         const playerHead = this.player.alive ? this.player.body[0] : null;
-        const botHead = this.bot.alive ? this.bot.body[0] : null;
+        const aiHead = this.ai.alive ? this.ai.body[0] : null;
         const player2Head = (this.player2 && this.player2.alive) ? this.player2.body[0] : null;
         
         // Hàm helper để kiểm tra va chạm giữa 2 rắn
@@ -642,7 +647,7 @@ class Game {
             // Đụng các rắn khác
             const otherSnakes = [
                 {snake: this.player, name: 'Người chơi 1'},
-                {snake: this.bot, name: 'AI'},
+                {snake: this.ai, name: 'AI'},
                 {snake: this.player2, name: 'Người chơi 2'}
             ].filter(s => s.snake && s.snake !== snake1 && s.snake.alive);
             
@@ -658,38 +663,47 @@ class Game {
         
         // Kiểm tra từng rắn
         checkSnakeCollision(this.player, 'Người chơi 1', 'player');
-        checkSnakeCollision(this.bot, 'AI', 'bot');
+        checkSnakeCollision(this.ai, 'AI', 'ai');
         if (this.player2) {
             checkSnakeCollision(this.player2, 'Người chơi 2', 'player3');
         }
         
         // Kiểm tra ăn thức ăn
         if (this.player.alive) this.checkFoodCollision(this.player, 'player');
-        if (this.bot.alive) this.checkFoodCollision(this.bot, 'bot');
+        if (this.ai.alive) this.checkFoodCollision(this.ai, 'ai');
         if (this.player2 && this.player2.alive) this.checkFoodCollision(this.player2, 'player3');
     }
     
     killSnake(snake, reason) {
         snake.alive = false;
         
-        // Biến thân rắn thành thức ăn
-        snake.body.forEach(segment => {
-            // Random xem có phải correct food không
-            const isCorrect = Math.random() > 0.5;
-            let label;
+        // Mất 30% điểm khi chết
+        snake.score = Math.floor(snake.score * 0.7);
+        
+        // Biến thân rắn thành thức ăn - dùng đúng thức ăn đã ăn
+        snake.body.forEach((segment, index) => {
+            let foodInfo = snake.foodData[index];
             
-            if (isCorrect) {
-                label = this.currentTopic.correct[Math.floor(Math.random() * this.currentTopic.correct.length)];
-            } else {
-                const wrongItems = ALL_ITEMS.filter(item => !this.currentTopic.correct.includes(item));
-                label = wrongItems[Math.floor(Math.random() * wrongItems.length)];
+            // Nếu đốt này không có thông tin thức ăn (đốt ban đầu), tạo random
+            if (!foodInfo) {
+                const isCorrect = Math.random() > 0.5;
+                let label;
+                
+                if (isCorrect) {
+                    label = this.currentTopic.correct[Math.floor(Math.random() * this.currentTopic.correct.length)];
+                } else {
+                    const wrongItems = ALL_ITEMS.filter(item => !this.currentTopic.correct.includes(item));
+                    label = wrongItems[Math.floor(Math.random() * wrongItems.length)];
+                }
+                
+                foodInfo = { isCorrect, label };
             }
             
             this.foods.push({
                 x: segment.x,
                 y: segment.y,
-                isCorrect,
-                label
+                isCorrect: foodInfo.isCorrect,
+                label: foodInfo.label
             });
         });
         
@@ -728,8 +742,11 @@ class Game {
         snake.respawnTime = Date.now() + 3000;
         
         // Cập nhật UI
-        const type = snake === this.player ? 'player' : (snake === this.player2 ? 'player3' : 'bot');
-        document.getElementById(`${type}-status`).textContent = '💀 Hồi sinh sau 3s...';
+        const type = snake === this.player ? 'player' : (snake === this.player2 ? 'player3' : 'ai');
+        document.getElementById(`${type}-status`).textContent = '💀 Hồi sinh sau 3s... (-30% điểm)';
+        
+        // Cập nhật điểm số ngay lập tức
+        this.updateUI();
         
         console.log(reason);
     }
@@ -770,6 +787,7 @@ class Game {
             {x: x - 1, y: y},
             {x: x - 2, y: y}
         ];
+        snake.foodData = [null, null, null]; // Reset thông tin thức ăn
         snake.direction = {x: 1, y: 0};
         snake.nextDirection = {x: 1, y: 0};
         snake.alive = true;
@@ -801,6 +819,11 @@ class Game {
                     // Ăn đúng - hiệu ứng to lên
                     snake.score += CONFIG.CORRECT_POINTS;
                     snake.body.push({...snake.body[snake.body.length - 1]});
+                    // Lưu thông tin thức ăn vào đốt mới
+                    snake.foodData.push({
+                        isCorrect: food.isCorrect,
+                        label: food.label
+                    });
                     snake.growing = true;
                     snake.growUntil = Date.now() + 200; // Hiệu ứng 0.2s
                 } else {
@@ -856,7 +879,7 @@ class Game {
         for (const segment of this.player.body) {
             if (segment.x === x && segment.y === y) return true;
         }
-        for (const segment of this.bot.body) {
+        for (const segment of this.ai.body) {
             if (segment.x === x && segment.y === y) return true;
         }
         for (const food of this.foods) {
@@ -873,10 +896,10 @@ class Game {
         
         if (this.timeLeft <= 0) {
             // Hết giờ - so sánh điểm
-            if (this.player.score > this.bot.score) {
+            if (this.player.score > this.ai.score) {
                 this.gameOver('player', 'Hết giờ! Người chơi có điểm cao hơn!');
-            } else if (this.bot.score > this.player.score) {
-                this.gameOver('bot', 'Hết giờ! Bot có điểm cao hơn!');
+            } else if (this.ai.score > this.player.score) {
+                this.gameOver('ai', 'Hết giờ! AI có điểm cao hơn!');
             } else {
                 this.gameOver('draw', 'Hết giờ! Hai bên hòa điểm!');
             }
@@ -886,8 +909,8 @@ class Game {
     updateUI() {
         document.getElementById('player-score').textContent = this.player.score;
         document.getElementById('player-length').textContent = this.player.body.length;
-        document.getElementById('bot-score').textContent = this.bot.score;
-        document.getElementById('bot-length').textContent = this.bot.body.length;
+        document.getElementById('ai-score').textContent = this.ai.score;
+        document.getElementById('ai-length').textContent = this.ai.body.length;
         
         if (this.player2) {
             document.getElementById('player3-score').textContent = this.player2.score;
@@ -970,7 +993,7 @@ class Game {
         
         // Vẽ rắn (chỉ vẽ nếu còn sống)
         if (this.player.alive) this.drawSnake(this.player);
-        if (this.bot.alive) this.drawSnake(this.bot);
+        if (this.ai.alive) this.drawSnake(this.ai);
         if (this.player2 && this.player2.alive) this.drawSnake(this.player2);
     }
     
@@ -1008,7 +1031,7 @@ class Game {
                 
                 // Vẽ emoji trên đầu rắn
                 let emoji = '👨'; // Mặc định nam
-                if (snake === this.bot) {
+                if (snake === this.ai) {
                     emoji = '🤖'; // AI
                 } else if (snake === this.player2) {
                     emoji = '👩'; // Nữ
@@ -1067,7 +1090,7 @@ class Game {
             resultText = '🎉 👨 Người chơi 1 thắng!';
         } else if (winner === 'player3') {
             resultText = '🎉 👩 Người chơi 2 thắng!';
-        } else if (winner === 'bot') {
+        } else if (winner === 'ai') {
             resultText = '🤖 AI thắng!';
         } else {
             resultText = '🤝 Hòa!';
@@ -1082,7 +1105,7 @@ class Game {
             statsHTML += `<div>👩 Người chơi 2: ${this.player2.score} điểm (${this.player2.body.length} đốt)</div>`;
         }
         
-        statsHTML += `<div>🤖 AI: ${this.bot.score} điểm (${this.bot.body.length} đốt)</div>`;
+        statsHTML += `<div>🤖 AI: ${this.ai.score} điểm (${this.ai.body.length} đốt)</div>`;
         statsHTML += `</div>`;
         
         title.textContent = resultText;
@@ -1094,3 +1117,55 @@ class Game {
 
 // Khởi động game
 const game = new Game();
+
+// Xử lý slider tốc độ - chạy ngay vì script ở cuối body
+console.log('Bắt đầu khởi tạo slider...');
+
+const speedSlider = document.getElementById('gameSpeed');
+const speedDisplay = document.getElementById('speedDisplay');
+
+console.log('speedSlider:', speedSlider);
+console.log('speedDisplay:', speedDisplay);
+
+if (!speedSlider || !speedDisplay) {
+    console.error('Không tìm thấy slider hoặc display!');
+} else {
+    const speedLabels = {
+        1: 'Rất chậm',
+        2: 'Chậm',
+        3: 'Trung bình',
+        4: 'Nhanh',
+        5: 'Rất nhanh'
+    };
+
+    const speedValues = {
+        1: 250,
+        2: 180,
+        3: 140,
+        4: 100,
+        5: 70
+    };
+
+    // Cập nhật hiển thị khi kéo slider
+    speedSlider.addEventListener('input', (e) => {
+        const value = e.target.value;
+        speedDisplay.textContent = speedLabels[value];
+        
+        // Cập nhật tốc độ ngay lập tức cho tất cả cấp độ
+        const customSpeed = speedValues[value];
+        console.log('Cập nhật tốc độ:', customSpeed, 'ms');
+        Object.keys(DIFFICULTY_LEVELS).forEach(key => {
+            DIFFICULTY_LEVELS[key].gameSpeed = customSpeed;
+            console.log(`${key}: gameSpeed =`, DIFFICULTY_LEVELS[key].gameSpeed);
+        });
+    });
+
+    // Khởi tạo tốc độ ban đầu
+    const initialSpeed = speedValues[speedSlider.value];
+    console.log('Tốc độ khởi tạo:', initialSpeed, 'ms');
+    Object.keys(DIFFICULTY_LEVELS).forEach(key => {
+        DIFFICULTY_LEVELS[key].gameSpeed = initialSpeed;
+    });
+    
+    console.log('Slider đã được khởi tạo thành công!');
+}
