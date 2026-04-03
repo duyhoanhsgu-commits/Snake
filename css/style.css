@@ -12,22 +12,24 @@ html {
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    height: 100vh;
+    min-height: 100vh;
     width: 100vw;
     margin: 0;
     padding: 0;
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .screen {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-width: 95%;
-    max-height: 95vh;
-    overflow-y: auto;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
 }
 
 /* ===== MENU ===== */
@@ -36,8 +38,10 @@ body {
     border-radius: 15px;
     padding: 20px 25px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    max-width: 600px;
     width: 100%;
+    max-width: 600px;
+    max-height: 95vh;
+    overflow-y: auto;
 }
 
 .game-title {
@@ -305,8 +309,10 @@ button:hover {
     border-radius: 20px;
     padding: 18px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    max-width: 940px;
     width: 100%;
+    max-width: 940px;
+    max-height: 95vh;
+    overflow-y: auto;
 }
 
 .header {
@@ -547,6 +553,115 @@ button:hover {
 }
 
 /* ===== RESPONSIVE ===== */
+@media (max-height: 800px) {
+    .menu-container {
+        padding: 15px 20px;
+    }
+    
+    .game-title {
+        font-size: 1.5em;
+        margin-bottom: 3px;
+    }
+    
+    .game-description {
+        font-size: 0.85em;
+        margin-bottom: 10px;
+    }
+    
+    .difficulty-card {
+        padding: 8px;
+        margin-bottom: 5px;
+    }
+    
+    .difficulty-icon,
+    .mode-icon {
+        font-size: 1.2em;
+    }
+    
+    .difficulty-name,
+    .mode-name {
+        font-size: 0.85em;
+    }
+    
+    .mode-btn {
+        padding: 8px;
+    }
+    
+    .time-setting,
+    .speed-setting {
+        margin: 10px 0;
+    }
+    
+    .btn-play {
+        padding: 8px 30px;
+        font-size: 1em;
+        margin: 10px auto 0;
+    }
+}
+
+@media (max-height: 700px) {
+    .menu-container {
+        padding: 12px 18px;
+    }
+    
+    .game-title {
+        font-size: 1.3em;
+        margin-bottom: 2px;
+    }
+    
+    .game-subtitle {
+        font-size: 0.9em;
+        margin-bottom: 8px;
+    }
+    
+    .game-description {
+        font-size: 0.8em;
+        margin-bottom: 8px;
+    }
+    
+    .difficulty-selection h3,
+    .game-mode-selection h3 {
+        font-size: 0.9em;
+        margin-bottom: 6px;
+    }
+    
+    .difficulty-card {
+        padding: 6px;
+        margin-bottom: 4px;
+    }
+    
+    .difficulty-icon,
+    .mode-icon {
+        font-size: 1em;
+    }
+    
+    .difficulty-name,
+    .mode-name {
+        font-size: 0.8em;
+    }
+    
+    .time-setting label,
+    .speed-setting label {
+        font-size: 0.85em;
+        margin-bottom: 4px;
+    }
+    
+    .time-setting input {
+        padding: 5px;
+        font-size: 0.85em;
+    }
+    
+    .speed-slider-container input[type="range"] {
+        width: 140px;
+    }
+    
+    .btn-play {
+        padding: 7px 25px;
+        font-size: 0.95em;
+        margin: 8px auto 0;
+    }
+}
+
 @media (max-width: 768px) {
     .menu-container,
     .game-container {
@@ -597,5 +712,24 @@ button:hover {
 
     .control-hint {
         order: -1;
+    }
+}
+
+@media (max-width: 480px) {
+    .menu-container {
+        padding: 15px;
+    }
+    
+    .game-title {
+        font-size: 1.5em;
+    }
+    
+    .game-description {
+        font-size: 0.85em;
+    }
+    
+    .difficulty-icon,
+    .mode-icon {
+        font-size: 1.2em;
     }
 }
