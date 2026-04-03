@@ -17,55 +17,76 @@
                     Đối đầu với AI thông minh! Ăn đúng thức ăn theo chủ đề, tránh bẫy sai để ghi điểm.
                 </p>
                 
-                <div class="difficulty-selection">
-                    <h3>Chọn đối thủ:</h3>
+                <!-- Bước 1: Chọn đối thủ -->
+                <div id="step1" class="step-container active">
+                    <div class="difficulty-selection">
+                        <h3>Bước 1: Chọn đối thủ</h3>
+                        
+                        <div class="difficulty-cards">
+                            <div class="difficulty-card" data-level="easy">
+                                <div class="difficulty-icon">😊🌱🐢</div>
+                                <div class="difficulty-name">🐍 Rắn AI<br>Mới Vào Nghề</div>
+                            </div>
+                            
+                            <div class="difficulty-card active" data-level="medium">
+                                <div class="difficulty-icon">😐⚡🎯</div>
+                                <div class="difficulty-name">🐍 Rắn AI<br>Chuyên Nghiệp</div>
+                            </div>
+                            
+                            <div class="difficulty-card" data-level="hard">
+                                <div class="difficulty-icon">😈🔥💀</div>
+                                <div class="difficulty-name">🐍 Rắn AI<br>Huyền Thoại</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="nextBtn1" class="btn-next">Tiếp theo →</button>
+                </div>
+                
+                <!-- Bước 2: Chọn chế độ chơi -->
+                <div id="step2" class="step-container">
+                    <div class="game-mode-selection">
+                        <h3>Bước 2: Chế độ chơi</h3>
+                        <div class="mode-buttons">
+                            <button class="mode-btn active" data-mode="single">
+                                <span class="mode-icon">🤖</span>
+                                <span class="mode-name">1 Người vs AI</span>
+                            </button>
+                            <button class="mode-btn" data-mode="multi">
+                                <span class="mode-icon">👥</span>
+                                <span class="mode-name">2 Người vs AI</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="step-buttons space-between">
+                        <button id="backBtn1" class="btn-back-step">← Quay lại</button>
+                        <button id="nextBtn2" class="btn-next">Tiếp theo →</button>
+                    </div>
+                </div>
+                
+                <!-- Bước 3: Chọn tốc độ và thời gian -->
+                <div id="step3" class="step-container">
+                    <h3>Bước 3: Cài đặt game</h3>
                     
-                    <div class="difficulty-card" data-level="easy">
-                        <div class="difficulty-icon">😊</div>
-                        <div class="difficulty-name">🐍 Rắn AI Mới Vào Nghề</div>
+                    <div class="speed-setting">
+                        <label for="gameSpeed">⚡ Tốc độ game:</label>
+                        <div class="speed-slider-container">
+                            <span class="speed-label">Chậm</span>
+                            <input type="range" id="gameSpeed" min="1" max="5" value="3" step="1">
+                            <span class="speed-label">Nhanh</span>
+                        </div>
+                        <div class="speed-value">Tốc độ: <span id="speedDisplay">Trung bình</span></div>
                     </div>
                     
-                    <div class="difficulty-card active" data-level="medium">
-                        <div class="difficulty-icon">😐</div>
-                        <div class="difficulty-name">🐍 Rắn AI Chuyên Nghiệp</div>
+                    <div class="time-setting">
+                        <label for="gameTime">⏱️ Thời gian chơi (giây):</label>
+                        <input type="number" id="gameTime" min="30" max="300" value="30" step="10">
                     </div>
                     
-                    <div class="difficulty-card" data-level="hard">
-                        <div class="difficulty-icon">�</div>
-                        <div class="difficulty-name">🐍 Rắn AI Huyền Thoại</div>
+                    <div class="step-buttons space-between">
+                        <button id="backBtn2" class="btn-back-step">← Quay lại</button>
+                        <button id="playBtn" class="btn-play">Bắt đầu chơi 🎮</button>
                     </div>
                 </div>
-                
-                <div class="game-mode-selection">
-                    <h3>Chế độ chơi:</h3>
-                    <div class="mode-buttons">
-                        <button class="mode-btn active" data-mode="single">
-                            <span class="mode-icon">🤖</span>
-                            <span class="mode-name">1 Người vs AI</span>
-                        </button>
-                        <button class="mode-btn" data-mode="multi">
-                            <span class="mode-icon">👥</span>
-                            <span class="mode-name">2 Người vs AI</span>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="time-setting">
-                    <label for="gameTime">⏱️ Thời gian chơi (giây):</label>
-                    <input type="number" id="gameTime" min="30" max="300" value="60" step="10">
-                </div>
-                
-                <div class="speed-setting">
-                    <label for="gameSpeed">⚡ Tốc độ game:</label>
-                    <div class="speed-slider-container">
-                        <span class="speed-label">Chậm</span>
-                        <input type="range" id="gameSpeed" min="1" max="5" value="3" step="1">
-                        <span class="speed-label">Nhanh</span>
-                    </div>
-                    <div class="speed-value">Tốc độ: <span id="speedDisplay">Trung bình</span></div>
-                </div>
-                
-                <button id="playBtn" class="btn-play">Bắt đầu chơi</button>
             </div>
         </div>
     </div>

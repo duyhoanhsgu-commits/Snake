@@ -164,6 +164,49 @@ class Game {
     }
     
     setupControls() {
+        // Xử lý chuyển bước
+        const nextBtn1 = document.getElementById('nextBtn1');
+        const nextBtn2 = document.getElementById('nextBtn2');
+        const backBtn1 = document.getElementById('backBtn1');
+        const backBtn2 = document.getElementById('backBtn2');
+        
+        console.log('nextBtn1:', nextBtn1);
+        console.log('nextBtn2:', nextBtn2);
+        console.log('backBtn1:', backBtn1);
+        console.log('backBtn2:', backBtn2);
+        
+        if (nextBtn1) {
+            nextBtn1.addEventListener('click', () => {
+                console.log('Next button 1 clicked!');
+                document.getElementById('step1').classList.remove('active');
+                document.getElementById('step2').classList.add('active');
+            });
+        }
+        
+        if (nextBtn2) {
+            nextBtn2.addEventListener('click', () => {
+                console.log('Next button 2 clicked!');
+                document.getElementById('step2').classList.remove('active');
+                document.getElementById('step3').classList.add('active');
+            });
+        }
+        
+        if (backBtn1) {
+            backBtn1.addEventListener('click', () => {
+                console.log('Back button 1 clicked!');
+                document.getElementById('step2').classList.remove('active');
+                document.getElementById('step1').classList.add('active');
+            });
+        }
+        
+        if (backBtn2) {
+            backBtn2.addEventListener('click', () => {
+                console.log('Back button 2 clicked!');
+                document.getElementById('step3').classList.remove('active');
+                document.getElementById('step2').classList.add('active');
+            });
+        }
+        
         document.addEventListener('keydown', (e) => {
             if (!this.gameRunning || this.gamePaused) return;
             
@@ -277,6 +320,12 @@ class Game {
         document.getElementById('gameScreen').style.display = 'none';
         document.getElementById('menuScreen').style.display = 'flex';
         document.body.classList.remove('game-active');
+        
+        // Reset về bước 1
+        document.getElementById('step1').classList.add('active');
+        document.getElementById('step2').classList.remove('active');
+        document.getElementById('step3').classList.remove('active');
+        
         this.reset();
     }
     
