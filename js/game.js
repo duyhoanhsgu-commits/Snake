@@ -2,14 +2,14 @@ console.log('=== FILE GAME.JS BẮT ĐẦU LOAD ===');
 
 // Cấu hình game
 const CONFIG = {
-    GRID_SIZE_X: 44, // Chiều rộng - tăng 1.25x
-    GRID_SIZE_Y: 22, // Chiều cao - tăng 1.25x
+    GRID_SIZE_X: 88, // Chiều rộng - tăng gấp đôi (44 x 2)
+    GRID_SIZE_Y: 44, // Chiều cao - tăng gấp đôi (22 x 2)
     CELL_SIZE: 20,
     GAME_SPEED: 150,
     GAME_DURATION: 60,
     FOOD_SPAWN_INTERVAL: 2000,
-    CORRECT_POINTS: 10,
-    WRONG_PENALTY: -5,
+    CORRECT_POINTS: 1,
+    WRONG_PENALTY: -2,
     STUN_DURATION: 2000,
     BOT_ERROR_RATE: 0.25
 };
@@ -45,65 +45,45 @@ const DIFFICULTY_LEVELS = {
     }
 };
 
-// Chủ đề và dữ liệu mẫu
+// Chủ đề và dữ liệu mẫu - CHỈ TRÁI CÂY VÀ BOM
 const TOPICS = [
     {
-        name: "Chỉ ăn CÔNG THỨC VẬT LÝ",
-        correct: ["E=mc²", "F=ma", "P=VI", "v=s/t", "W=Fs", "a=Δv/t", "P=F/S"]
-    },
-    {
-        name: "Chỉ ăn CÔNG THỨC HÓA HỌC",
-        correct: ["H₂O", "CO₂", "NaCl", "H₂SO₄", "CaCO₃", "O₂", "CH₄"]
-    },
-    {
-        name: "Chỉ ăn ĐỘNG VẬT CÓ VÚ",
-        correct: ["🐕", "🐈", "🐘", "🦁", "🐯", "🐻", "🐼", "🦊"]
-    },
-    {
-        name: "Chỉ ăn NGÔN NGỮ LẬP TRÌNH",
-        correct: ["Python", "Java", "C++", "JS", "Ruby", "Go", "Rust", "PHP"]
-    },
-    {
-        name: "Chỉ ăn SỐ CHẴN",
-        correct: ["2", "4", "6", "8", "10", "12", "14", "16"]
-    },
-    {
-        name: "Chỉ ăn SỐ LẺ",
-        correct: ["1", "3", "5", "7", "9", "11", "13", "15"]
-    },
-    {
-        name: "Chỉ ăn TRÁI CÂY",
-        correct: ["🍎", "🍊", "🍌", "🍇", "🍓", "🍑", "🍉", "🥝"]
-    },
-    {
-        name: "Chỉ ăn RAU CỦ",
-        correct: ["🥕", "🥔", "🥬", "🥦", "🌽", "🍅", "🥒", "🧅"]
-    },
-    {
-        name: "Chỉ ăn HÌNH TRÒN",
-        correct: ["⚪", "🔵", "🟢", "🟡", "🟠", "🔴", "🟣", "🟤"]
-    },
-    {
-        name: "Chỉ ăn HÌNH VUÔNG",
-        correct: ["⬜", "🟦", "🟩", "🟨", "🟧", "🟥", "🟪", "🟫"]
+        name: "Ăn TRÁI CÂY, tránh BOM",
+        correct: ["🍎", "🍊", "🍌", "🍇", "🍓", "🍑", "🍉", "🥝"],
+        wrong: ["💣"]
     }
 ];
 
-// Tạo danh sách tất cả items để làm wrong answers
-const ALL_ITEMS = TOPICS.flatMap(topic => topic.correct);
+// Tạo danh sách tất cả items
+const ALL_ITEMS = ["🍎", "🍊", "🍌", "🍇", "🍓", "🍑", "🍉", "🥝", "💣"];
 
 class Game {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
-        this.canvas.width = CONFIG.GRID_SIZE_X * CONFIG.CELL_SIZE;
-        this.canvas.height = CONFIG.GRID_SIZE_Y * CONFIG.CELL_SIZE;
+        
+        // Tính toán kích thước canvas dựa trên màn hình
+        this.calculateCanvasSize();
         
         this.difficulty = 'medium';
         this.gameMode = 'single'; // 'single' hoặc 'multi'
         this.currentTopic = TOPICS[0]; // Khởi tạo topic mặc định
         this.reset();
         this.setupControls();
+        
+        // Điều chỉnh kích thước khi thay đổi màn hình
+        window.addEventListener('resize', () => {
+            this.calculateCanvasSize();
+        });
+    }
+    
+    calculateCanvasSize() {
+        // Cố định cell size 40px
+        CONFIG.CELL_SIZE = 40;
+        
+        // Cập nhật kích thước canvas
+        this.canvas.width = CONFIG.GRID_SIZE_X * CONFIG.CELL_SIZE;
+        this.canvas.height = CONFIG.GRID_SIZE_Y * CONFIG.CELL_SIZE;
     }
     
     reset() {
@@ -262,13 +242,7 @@ class Game {
             
             document.getElementById('menuScreen').style.display = 'none';
             document.getElementById('gameScreen').style.display = 'block';
-            this.showTopicModal();
-        });
-        
-        // Nút bắt đầu game từ modal topic
-        document.getElementById('startGameBtn').addEventListener('click', () => {
-            document.getElementById('topicModal').classList.remove('show');
-            this.start();
+            this.start(); // Bắt đầu game ngay lập tức
         });
         
         // Nút tạm dừng
@@ -287,7 +261,9 @@ class Game {
             document.getElementById('gameOverModal').classList.remove('show');
             this.selectNewTopic();
             this.reset();
-            this.showTopicModal();
+            document.getElementById('menuScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            this.start(); // Bắt đầu game ngay lập tức
         });
         
         // Nút về menu từ modal
@@ -304,16 +280,11 @@ class Game {
         this.reset();
     }
     
-    showTopicModal() {
-        document.getElementById('topicDisplay').textContent = this.currentTopic.name;
-        document.getElementById('topicModal').classList.add('show');
-    }
-    
     stopGame() {
         this.gameRunning = false;
         if (this.gameLoop) clearInterval(this.gameLoop);
-        if (this.correctFoodSpawner) clearInterval(this.correctFoodSpawner);
-        if (this.wrongFoodSpawner) clearInterval(this.wrongFoodSpawner);
+        if (this.foodSpawner) clearInterval(this.foodSpawner);
+        if (this.superFruitSpawner) clearInterval(this.superFruitSpawner);
         if (this.timer) clearInterval(this.timer);
         if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
         
@@ -328,17 +299,26 @@ class Game {
         // Cố định màn hình khi chơi
         document.body.classList.add('game-active');
         
-        document.getElementById('objective').textContent = this.currentTopic.name;
-        
         // Spawn thức ăn ban đầu
-        this.spawnFood(true);  // 1 mồi đúng
-        this.spawnFood(false); // 1 mồi sai
+        for (let i = 0; i < 3; i++) {
+            this.spawnFood(true);  // 3 trái cây
+        }
+        this.spawnFood(false); // 1 bom
         
         this.gameLoop = setInterval(() => this.update(), level.gameSpeed);
         
-        // Spawn riêng cho mồi đúng và mồi sai
-        this.correctFoodSpawner = setInterval(() => this.spawnFood(true), level.correctFoodInterval);
-        this.wrongFoodSpawner = setInterval(() => this.spawnFood(false), level.wrongFoodInterval);
+        // Mỗi 1 giây spawn 3 trái cây và 1 bom
+        this.foodSpawner = setInterval(() => {
+            for (let i = 0; i < 3; i++) {
+                this.spawnFood(true);
+            }
+            this.spawnFood(false);
+        }, 1000);
+        
+        // Mỗi 5 giây spawn 1 trái cây bự (super fruit)
+        this.superFruitSpawner = setInterval(() => {
+            this.spawnFood(true, true); // true = correct, true = super
+        }, 5000);
         
         this.timer = setInterval(() => this.updateTimer(), 1000);
         
@@ -677,9 +657,6 @@ class Game {
     killSnake(snake, reason) {
         snake.alive = false;
         
-        // Mất 30% điểm khi chết
-        snake.score = Math.floor(snake.score * 0.7);
-        
         // Biến thân rắn thành thức ăn - dùng đúng thức ăn đã ăn
         snake.body.forEach((segment, index) => {
             let foodInfo = snake.foodData[index];
@@ -743,9 +720,9 @@ class Game {
         
         // Cập nhật UI
         const type = snake === this.player ? 'player' : (snake === this.player2 ? 'player3' : 'ai');
-        document.getElementById(`${type}-status`).textContent = '💀 Hồi sinh sau 3s... (-30% điểm)';
+        document.getElementById(`${type}-status`).textContent = '💀 Hồi sinh sau 3s...';
         
-        // Cập nhật điểm số ngay lập tức
+        // Cập nhật độ dài ngay lập tức
         this.updateUI();
         
         console.log(reason);
@@ -816,19 +793,42 @@ class Game {
             const food = this.foods[i];
             if (head.x === food.x && head.y === food.y) {
                 if (food.isCorrect) {
-                    // Ăn đúng - hiệu ứng to lên
-                    snake.score += CONFIG.CORRECT_POINTS;
-                    snake.body.push({...snake.body[snake.body.length - 1]});
-                    // Lưu thông tin thức ăn vào đốt mới
-                    snake.foodData.push({
-                        isCorrect: food.isCorrect,
-                        label: food.label
-                    });
+                    // Ăn trái cây
+                    const growCount = food.isSuper ? 3 : 1; // Super fruit cho 3 đốt
+                    
+                    for (let j = 0; j < growCount; j++) {
+                        snake.body.push({...snake.body[snake.body.length - 1]});
+                        // Lưu thông tin thức ăn vào đốt mới
+                        snake.foodData.push({
+                            isCorrect: food.isCorrect,
+                            label: food.label
+                        });
+                    }
+                    
                     snake.growing = true;
                     snake.growUntil = Date.now() + 200; // Hiệu ứng 0.2s
+                    
+                    if (food.isSuper) {
+                        document.getElementById(`${type}-status`).textContent = '⭐ +3 đốt!';
+                        setTimeout(() => {
+                            if (!snake.stunned) {
+                                document.getElementById(`${type}-status`).textContent = '';
+                            }
+                        }, 1000);
+                    }
                 } else {
-                    // Ăn sai - bị phạt
-                    snake.score += CONFIG.WRONG_PENALTY;
+                    // Ăn bom - giảm 2 đốt
+                    
+                    // Giảm 2 đốt (nếu đủ dài)
+                    if (snake.body.length > 3) {
+                        snake.body.pop();
+                        snake.foodData.pop();
+                        if (snake.body.length > 3) {
+                            snake.body.pop();
+                            snake.foodData.pop();
+                        }
+                    }
+                    
                     snake.stunned = true;
                     snake.stunnedUntil = Date.now() + CONFIG.STUN_DURATION;
                     document.getElementById(`${type}-status`).textContent = '😵 Choáng!';
@@ -841,13 +841,15 @@ class Game {
         }
     }
     
-    spawnFood(isCorrect) {
-        // Giới hạn số lượng mồi trên màn hình
-        const correctCount = this.foods.filter(f => f.isCorrect).length;
-        const wrongCount = this.foods.filter(f => !f.isCorrect).length;
-        
-        if (isCorrect && correctCount >= 4) return; // Tối đa 4 mồi đúng
-        if (!isCorrect && wrongCount >= 3) return;  // Tối đa 3 mồi sai
+    spawnFood(isCorrect, isSuper = false) {
+        // Giới hạn số lượng mồi trên màn hình (không giới hạn super fruit)
+        if (!isSuper) {
+            const correctCount = this.foods.filter(f => f.isCorrect && !f.isSuper).length;
+            const wrongCount = this.foods.filter(f => !f.isCorrect).length;
+            
+            if (isCorrect && correctCount >= 20) return; // Tối đa 20 trái cây thường
+            if (!isCorrect && wrongCount >= 10) return;  // Tối đa 10 bom
+        }
         
         let x, y;
         let attempts = 0;
@@ -863,15 +865,14 @@ class Game {
         let label;
         
         if (isCorrect) {
-            // Chọn từ danh sách correct của topic hiện tại
+            // Chọn trái cây
             label = this.currentTopic.correct[Math.floor(Math.random() * this.currentTopic.correct.length)];
         } else {
-            // Chọn từ các items không thuộc topic hiện tại
-            const wrongItems = ALL_ITEMS.filter(item => !this.currentTopic.correct.includes(item));
-            label = wrongItems[Math.floor(Math.random() * wrongItems.length)];
+            // Chọn bom
+            label = "💣";
         }
         
-        this.foods.push({x, y, isCorrect, label});
+        this.foods.push({x, y, isCorrect, label, isSuper});
     }
     
     isOccupied(x, y) {
@@ -895,50 +896,48 @@ class Game {
         document.getElementById('timer').textContent = this.timeLeft;
         
         if (this.timeLeft <= 0) {
-            // Hết giờ - so sánh điểm
-            if (this.player.score > this.ai.score) {
-                this.gameOver('player', 'Hết giờ! Người chơi có điểm cao hơn!');
-            } else if (this.ai.score > this.player.score) {
-                this.gameOver('ai', 'Hết giờ! AI có điểm cao hơn!');
+            // Hết giờ - so sánh độ dài
+            const playerLength = this.player.body.length;
+            const aiLength = this.ai.body.length;
+            
+            if (this.gameMode === 'multi' && this.player2) {
+                const player2Length = this.player2.body.length;
+                const maxLength = Math.max(playerLength, aiLength, player2Length);
+                
+                if (playerLength === maxLength && aiLength !== maxLength && player2Length !== maxLength) {
+                    this.gameOver('player', 'Hết giờ! Người chơi 1 dài nhất!');
+                } else if (player2Length === maxLength && playerLength !== maxLength && aiLength !== maxLength) {
+                    this.gameOver('player3', 'Hết giờ! Người chơi 2 dài nhất!');
+                } else if (aiLength === maxLength && playerLength !== maxLength && player2Length !== maxLength) {
+                    this.gameOver('ai', 'Hết giờ! AI dài nhất!');
+                } else {
+                    this.gameOver('draw', 'Hết giờ! Hòa nhau!');
+                }
             } else {
-                this.gameOver('draw', 'Hết giờ! Hai bên hòa điểm!');
+                if (playerLength > aiLength) {
+                    this.gameOver('player', 'Hết giờ! Người chơi dài hơn!');
+                } else if (aiLength > playerLength) {
+                    this.gameOver('ai', 'Hết giờ! AI dài hơn!');
+                } else {
+                    this.gameOver('draw', 'Hết giờ! Hai bên bằng nhau!');
+                }
             }
         }
     }
     
     updateUI() {
-        document.getElementById('player-score').textContent = this.player.score;
         document.getElementById('player-length').textContent = this.player.body.length;
-        document.getElementById('ai-score').textContent = this.ai.score;
         document.getElementById('ai-length').textContent = this.ai.body.length;
         
         if (this.player2) {
-            document.getElementById('player3-score').textContent = this.player2.score;
             document.getElementById('player3-length').textContent = this.player2.body.length;
         }
     }
     
     draw() {
-        // Xóa canvas
-        this.ctx.fillStyle = '#0f0f1e';
+        // Xóa canvas - nền trắng
+        this.ctx.fillStyle = '#ffffff';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // Vẽ lưới
-        this.ctx.strokeStyle = '#1a1a2e';
-        // Vẽ lưới dọc
-        for (let i = 0; i <= CONFIG.GRID_SIZE_X; i++) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(i * CONFIG.CELL_SIZE, 0);
-            this.ctx.lineTo(i * CONFIG.CELL_SIZE, this.canvas.height);
-            this.ctx.stroke();
-        }
-        // Vẽ lưới ngang
-        for (let i = 0; i <= CONFIG.GRID_SIZE_Y; i++) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(0, i * CONFIG.CELL_SIZE);
-            this.ctx.lineTo(this.canvas.width, i * CONFIG.CELL_SIZE);
-            this.ctx.stroke();
-        }
         
         // Vẽ marker hồi sinh (vệt sáng)
         const now = Date.now();
@@ -972,6 +971,10 @@ class Game {
         
         // Vẽ thức ăn
         this.foods.forEach(food => {
+            // Kích thước và font size tùy theo loại
+            const isSuper = food.isSuper;
+            const fontSize = isSuper ? 76 : 64; // Gấp đôi kích thước emoji (38*2=76, 32*2=64)
+            
             this.ctx.fillStyle = food.isCorrect ? '#4CAF50' : '#f44336';
             this.ctx.fillRect(
                 food.x * CONFIG.CELL_SIZE + 2,
@@ -980,8 +983,8 @@ class Game {
                 CONFIG.CELL_SIZE - 4
             );
             
-            this.ctx.fillStyle = 'white';
-            this.ctx.font = '10px Arial';
+            // Vẽ emoji với kích thước lớn hơn
+            this.ctx.font = `${fontSize}px Arial`;
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText(
@@ -1037,7 +1040,7 @@ class Game {
                     emoji = '👩'; // Nữ
                 }
                 
-                this.ctx.font = `${14 * scale}px Arial`;
+                this.ctx.font = `${48 * scale}px Arial`; // Gấp đôi kích thước emoji đầu rắn (24*2=48)
                 this.ctx.textAlign = 'center';
                 this.ctx.textBaseline = 'middle';
                 this.ctx.fillText(
@@ -1096,16 +1099,16 @@ class Game {
             resultText = '🤝 Hòa!';
         }
         
-        // Tạo bảng xếp hạng
+        // Tạo bảng xếp hạng - chỉ hiển thị độ dài
         let statsHTML = `<div><strong>Lý do kết thúc:</strong> ${reason}</div><div style="margin-top: 15px;">`;
         
-        statsHTML += `<div>👨 Người chơi 1: ${this.player.score} điểm (${this.player.body.length} đốt)</div>`;
+        statsHTML += `<div>👨 Người chơi 1: ${this.player.body.length} đốt</div>`;
         
         if (this.player2) {
-            statsHTML += `<div>👩 Người chơi 2: ${this.player2.score} điểm (${this.player2.body.length} đốt)</div>`;
+            statsHTML += `<div>👩 Người chơi 2: ${this.player2.body.length} đốt</div>`;
         }
         
-        statsHTML += `<div>🤖 AI: ${this.ai.score} điểm (${this.ai.body.length} đốt)</div>`;
+        statsHTML += `<div>🤖 AI: ${this.ai.body.length} đốt</div>`;
         statsHTML += `</div>`;
         
         title.textContent = resultText;

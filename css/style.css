@@ -309,39 +309,20 @@ button:hover {
     border-radius: 20px;
     padding: 18px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    width: 100%;
-    max-width: 940px;
+    width: auto;
+    max-width: 95vw;
     max-height: 95vh;
-    overflow-y: auto;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .header {
-    text-align: center;
-    margin-bottom: 12px;
-}
-
-.header h1 {
     display: none;
 }
 
 .objective-panel {
-    background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
-    padding: 12px 22px;
-    border-radius: 12px;
-    display: inline-block;
-}
-
-.objective-label {
-    font-size: 0.9em;
-    color: white;
-    font-weight: bold;
-}
-
-.objective-text {
-    font-size: 1.2em;
-    color: white;
-    font-weight: bold;
-    margin-top: 5px;
+    display: none;
 }
 
 .game-info {
@@ -436,10 +417,11 @@ button:hover {
     margin: 12px auto;
     border: 3px solid #333;
     border-radius: 10px;
-    background: #1a1a2e;
+    background: #ffffff;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     image-rendering: pixelated;
     max-width: 100%;
+    max-height: calc(95vh - 250px);
 }
 
 .controls {
@@ -527,29 +509,11 @@ button:hover {
     color: #666;
 }
 
-.topic-modal {
-    max-width: 600px;
-}
-
-.topic-icon {
-    font-size: 4em;
-    margin-bottom: 20px;
-}
-
-.topic-display {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 25px;
-    border-radius: 15px;
-    font-size: 1.8em;
-    font-weight: bold;
-    margin: 20px 0;
-}
-
+.topic-modal,
+.topic-icon,
+.topic-display,
 .topic-hint {
-    color: #666;
-    font-size: 1.1em;
-    margin: 15px 0;
+    display: none;
 }
 
 /* ===== RESPONSIVE ===== */

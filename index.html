@@ -73,26 +73,16 @@
     <!-- Màn hình chơi game -->
     <div id="gameScreen" class="screen" style="display: none;">
         <div class="game-container">
-            <div class="header">
-                <h1>🐍 Rắn Tri Thức: Cuộc Đua Phân Loại</h1>
-                <div class="objective-panel">
-                    <div class="objective-label">🎯 Mục tiêu:</div>
-                    <div id="objective" class="objective-text"></div>
-                </div>
-            </div>
-            
             <div class="game-info">
                 <div class="player-info-combined player-blue-green">
                     <div class="player-section">
                         <div class="player-name">👤 Người chơi 1 (↑↓←→)</div>
-                        <div class="score">Điểm: <span id="player-score">0</span></div>
                         <div class="length">Độ dài: <span id="player-length">3</span></div>
                         <div id="player-status" class="status"></div>
                     </div>
                     
                     <div id="player3-section" class="player-section player-divider" style="display: none;">
                         <div class="player-name">👤 Người chơi 2 (WASD)</div>
-                        <div class="score">Điểm: <span id="player3-score">0</span></div>
                         <div class="length">Độ dài: <span id="player3-length">3</span></div>
                         <div id="player3-status" class="status"></div>
                     </div>
@@ -105,7 +95,6 @@
                 
                 <div class="player-info player-red">
                     <div class="player-name" id="player2-name">🤖 AI</div>
-                    <div class="score">Điểm: <span id="ai-score">0</span></div>
                     <div class="length">Độ dài: <span id="ai-length">3</span></div>
                     <div id="ai-status" class="status"></div>
                 </div>
@@ -124,11 +113,11 @@
             <div class="legend">
                 <div class="legend-item">
                     <span class="legend-color" style="background: #4CAF50;"></span>
-                    <span>Thức ăn đúng (+10 điểm)</span>
+                    <span>Trái cây (+1 đốt) | ⭐ Trái cây bự (+3 đốt, mỗi 5s)</span>
                 </div>
                 <div class="legend-item">
                     <span class="legend-color" style="background: #f44336;"></span>
-                    <span>Bẫy sai (-15 điểm, choáng 2s)</span>
+                    <span>Bom (-2 đốt, choáng 2s)</span>
                 </div>
             </div>
         </div>
@@ -141,17 +130,6 @@
             <div id="gameOverStats"></div>
             <button id="restartBtn" class="btn-restart">Chơi lại</button>
             <button id="menuBtn" class="btn-menu">Về menu</button>
-        </div>
-    </div>
-    
-    <!-- Modal hiển thị chủ đề -->
-    <div id="topicModal" class="modal">
-        <div class="modal-content topic-modal">
-            <div class="topic-icon">🎯</div>
-            <h2>Chủ đề của bạn</h2>
-            <div id="topicDisplay" class="topic-display"></div>
-            <p class="topic-hint">Hãy nhớ kỹ và chỉ ăn đúng mục tiêu!</p>
-            <button id="startGameBtn" class="btn-start-game">Bắt đầu ngay! 🚀</button>
         </div>
     </div>
     
