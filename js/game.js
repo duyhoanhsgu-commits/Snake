@@ -62,6 +62,17 @@ class Game {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
         
+        // Load SVG icons
+        this.playerIcons = {
+            player1: new Image(),
+            player2: new Image(),
+            ai: new Image()
+        };
+        
+        this.playerIcons.player1.src = 'assets/iconfinder-snake-4591880_122131.svg';
+        this.playerIcons.player2.src = 'assets/iconfinder-snake-4591880_122131.svg'; // Dùng chung icon
+        this.playerIcons.ai.src = 'assets/artboard-18_89038.svg';
+        
         // Tính toán kích thước canvas dựa trên màn hình
         this.calculateCanvasSize();
         
@@ -75,6 +86,76 @@ class Game {
         window.addEventListener('resize', () => {
             this.calculateCanvasSize();
         });
+        
+        // Thêm điều khiển cảm ứng cho mobile
+        this.setupTouchControls();
+    }
+    
+    setupTouchControls() {
+        this.canvas.addEventListener('touchstart', (e) => {
+            if (!this.gameRunning || this.gamePaused) return;
+            
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = this.canvas.getBoundingClientRect();
+            
+            // Tính vị trí chạm trên canvas
+            const touchX = touch.clientX - rect.left;
+            const touchY = touch.clientY - rect.top;
+            
+            // Chuyển đổi sang tọa độ grid
+            const gridX = Math.floor(touchX / CONFIG.CELL_SIZE);
+            const gridY = Math.floor(touchY / CONFIG.CELL_SIZE);
+            
+            // Xác định hướng di chuyển cho người chơi 1
+            if (this.player.alive) {
+                this.setDirectionToTarget(this.player, gridX, gridY);
+            }
+            
+            // Xác định hướng di chuyển cho người chơi 2 (nếu có)
+            if (this.gameMode === 'multi' && this.player2 && this.player2.alive) {
+                this.setDirectionToTarget(this.player2, gridX, gridY);
+            }
+        });
+        
+        // Thêm click chuột cho desktop
+        this.canvas.addEventListener('click', (e) => {
+            if (!this.gameRunning || this.gamePaused) return;
+            
+            const rect = this.canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+            
+            const gridX = Math.floor(clickX / CONFIG.CELL_SIZE);
+            const gridY = Math.floor(clickY / CONFIG.CELL_SIZE);
+            
+            if (this.player.alive) {
+                this.setDirectionToTarget(this.player, gridX, gridY);
+            }
+        });
+    }
+    
+    setDirectionToTarget(snake, targetX, targetY) {
+        const head = snake.body[0];
+        const dx = targetX - head.x;
+        const dy = targetY - head.y;
+        
+        // Xác định hướng chính (ngang hoặc dọc)
+        if (Math.abs(dx) > Math.abs(dy)) {
+            // Di chuyển ngang
+            if (dx > 0 && snake.direction.x === 0) {
+                snake.nextDirection = {x: 1, y: 0}; // Phải
+            } else if (dx < 0 && snake.direction.x === 0) {
+                snake.nextDirection = {x: -1, y: 0}; // Trái
+            }
+        } else {
+            // Di chuyển dọc
+            if (dy > 0 && snake.direction.y === 0) {
+                snake.nextDirection = {x: 0, y: 1}; // Xuống
+            } else if (dy < 0 && snake.direction.y === 0) {
+                snake.nextDirection = {x: 0, y: -1}; // Lên
+            }
+        }
     }
     
     calculateCanvasSize() {
@@ -1075,28 +1156,68 @@ class Game {
             const offset = (CONFIG.CELL_SIZE - cellSize) / 2;
             
             if (index === 0) {
-                // Đầu rắn - vẽ tròn
-                this.ctx.fillStyle = snake.color;
-                this.ctx.beginPath();
-                this.ctx.roundRect(x + offset + 2, y + offset + 2, cellSize - 4, cellSize - 4, 6);
-                this.ctx.fill();
+                // Đầu rắn
                 
-                // Vẽ emoji trên đầu rắn
-                let emoji = '👨'; // Mặc định nam
-                if (snake === this.ai) {
-                    emoji = '🤖'; // AI
-                } else if (snake === this.player2) {
-                    emoji = '👩'; // Nữ
+                // Kiểm tra nếu là bot thì vẽ emoji, còn lại vẽ icon
+                if (snake.isBot) {
+                    // Bot - vẽ emoji
+                    this.ctx.fillStyle = snake.color;
+                    this.ctx.beginPath();
+                    this.ctx.roundRect(x + offset + 2, y + offset + 2, cellSize - 4, cellSize - 4, 6);
+                    this.ctx.fill();
+                    
+                    this.ctx.font = `${80 * scale}px Arial`; // Tăng lên 80px
+                    this.ctx.textAlign = 'center';
+                    this.ctx.textBaseline = 'middle';
+                    this.ctx.fillText(
+                        '🤖',
+                        x + CONFIG.CELL_SIZE / 2,
+                        y + CONFIG.CELL_SIZE / 2
+                    );
+                } else {
+                    // Người chơi - vẽ icon SVG
+                    let icon;
+                    if (snake === this.player2) {
+                        icon = this.playerIcons.player2;
+                    } else {
+                        icon = this.playerIcons.player1;
+                    }
+                    
+                    // Vẽ icon nếu đã load xong
+                    if (icon && icon.complete) {
+                        const iconSize = cellSize * 1.8; // Tăng lên 1.8x
+                        const centerX = x + CONFIG.CELL_SIZE / 2;
+                        const centerY = y + CONFIG.CELL_SIZE / 2;
+                        
+                        // Tính góc xoay dựa trên hướng di chuyển (thêm 180°)
+                        let angle = 0;
+                        if (snake.direction.x === 1) angle = Math.PI / 2 + Math.PI;        // Phải -> 270°
+                        else if (snake.direction.x === -1) angle = -Math.PI / 2 + Math.PI;  // Trái -> 90°
+                        else if (snake.direction.y === 1) angle = Math.PI + Math.PI;  // Xuống -> 360° (0°)
+                        else if (snake.direction.y === -1) angle = 0 + Math.PI; // Lên -> 180°
+                        
+                        // Lưu trạng thái canvas
+                        this.ctx.save();
+                        
+                        // Di chuyển đến tâm ô
+                        this.ctx.translate(centerX, centerY);
+                        
+                        // Xoay theo hướng
+                        this.ctx.rotate(angle);
+                        
+                        // Vẽ icon (tâm tại gốc tọa độ)
+                        this.ctx.drawImage(
+                            icon,
+                            -iconSize / 2,
+                            -iconSize / 2,
+                            iconSize,
+                            iconSize
+                        );
+                        
+                        // Khôi phục trạng thái canvas
+                        this.ctx.restore();
+                    }
                 }
-                
-                this.ctx.font = `${48 * scale}px Arial`; // Gấp đôi kích thước emoji đầu rắn (24*2=48)
-                this.ctx.textAlign = 'center';
-                this.ctx.textBaseline = 'middle';
-                this.ctx.fillText(
-                    emoji,
-                    x + CONFIG.CELL_SIZE / 2,
-                    y + CONFIG.CELL_SIZE / 2
-                );
             } else {
                 // Thân rắn - gradient và bo tròn
                 const gradient = this.ctx.createLinearGradient(x, y, x + cellSize, y + cellSize);
@@ -1105,12 +1226,15 @@ class Game {
                 
                 this.ctx.fillStyle = gradient;
                 this.ctx.beginPath();
-                this.ctx.roundRect(x + offset + 3, y + offset + 3, cellSize - 6, cellSize - 6, 4);
+                // Tăng kích thước thân rắn vừa phải
+                const bodySize = cellSize * 1.1; // Tăng 10% thay vì 50%
+                const bodyOffset = (CONFIG.CELL_SIZE - bodySize) / 2;
+                this.ctx.roundRect(x + bodyOffset + 3, y + bodyOffset + 3, bodySize - 6, bodySize - 6, 4);
                 this.ctx.fill();
                 
                 // Viền sáng
                 this.ctx.strokeStyle = this.adjustBrightness(snake.color, 30);
-                this.ctx.lineWidth = 1;
+                this.ctx.lineWidth = 2;
                 this.ctx.stroke();
             }
         });
