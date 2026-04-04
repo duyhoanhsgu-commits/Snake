@@ -101,20 +101,18 @@ class Game {
             
             // Tính vị trí chạm trên canvas
             const touchX = touch.clientX - rect.left;
-            const touchY = touch.clientY - rect.top;
             
-            // Chuyển đổi sang tọa độ grid
-            const gridX = Math.floor(touchX / CONFIG.CELL_SIZE);
-            const gridY = Math.floor(touchY / CONFIG.CELL_SIZE);
+            // Chia màn hình làm 2: trái và phải
+            const screenCenter = rect.width / 2;
             
-            // Xác định hướng di chuyển cho người chơi 1
+            // Xác định hướng cho người chơi 1
             if (this.player.alive) {
-                this.setDirectionToTarget(this.player, gridX, gridY);
+                this.turnSnake(this.player, touchX < screenCenter);
             }
             
-            // Xác định hướng di chuyển cho người chơi 2 (nếu có)
+            // Nếu chế độ 2 người
             if (this.gameMode === 'multi' && this.player2 && this.player2.alive) {
-                this.setDirectionToTarget(this.player2, gridX, gridY);
+                this.turnSnake(this.player2, touchX < screenCenter);
             }
         });
         
@@ -124,36 +122,47 @@ class Game {
             
             const rect = this.canvas.getBoundingClientRect();
             const clickX = e.clientX - rect.left;
-            const clickY = e.clientY - rect.top;
-            
-            const gridX = Math.floor(clickX / CONFIG.CELL_SIZE);
-            const gridY = Math.floor(clickY / CONFIG.CELL_SIZE);
+            const screenCenter = rect.width / 2;
             
             if (this.player.alive) {
-                this.setDirectionToTarget(this.player, gridX, gridY);
+                this.turnSnake(this.player, clickX < screenCenter);
             }
         });
     }
     
-    setDirectionToTarget(snake, targetX, targetY) {
-        const head = snake.body[0];
-        const dx = targetX - head.x;
-        const dy = targetY - head.y;
+    turnSnake(snake, turnLeft) {
+        // Rẽ trái hoặc phải dựa trên hướng hiện tại
+        const dir = snake.direction;
         
-        // Xác định hướng chính (ngang hoặc dọc)
-        if (Math.abs(dx) > Math.abs(dy)) {
-            // Di chuyển ngang
-            if (dx > 0 && snake.direction.x === 0) {
-                snake.nextDirection = {x: 1, y: 0}; // Phải
-            } else if (dx < 0 && snake.direction.x === 0) {
-                snake.nextDirection = {x: -1, y: 0}; // Trái
+        if (turnLeft) {
+            // Rẽ trái
+            if (dir.x === 1) {
+                // Đang đi phải -> rẽ lên
+                snake.nextDirection = {x: 0, y: -1};
+            } else if (dir.x === -1) {
+                // Đang đi trái -> rẽ xuống
+                snake.nextDirection = {x: 0, y: 1};
+            } else if (dir.y === 1) {
+                // Đang đi xuống -> rẽ phải
+                snake.nextDirection = {x: 1, y: 0};
+            } else if (dir.y === -1) {
+                // Đang đi lên -> rẽ trái
+                snake.nextDirection = {x: -1, y: 0};
             }
         } else {
-            // Di chuyển dọc
-            if (dy > 0 && snake.direction.y === 0) {
-                snake.nextDirection = {x: 0, y: 1}; // Xuống
-            } else if (dy < 0 && snake.direction.y === 0) {
-                snake.nextDirection = {x: 0, y: -1}; // Lên
+            // Rẽ phải
+            if (dir.x === 1) {
+                // Đang đi phải -> rẽ xuống
+                snake.nextDirection = {x: 0, y: 1};
+            } else if (dir.x === -1) {
+                // Đang đi trái -> rẽ lên
+                snake.nextDirection = {x: 0, y: -1};
+            } else if (dir.y === 1) {
+                // Đang đi xuống -> rẽ trái
+                snake.nextDirection = {x: -1, y: 0};
+            } else if (dir.y === -1) {
+                // Đang đi lên -> rẽ phải
+                snake.nextDirection = {x: 1, y: 0};
             }
         }
     }
