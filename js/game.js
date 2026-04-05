@@ -49,13 +49,17 @@ const DIFFICULTY_LEVELS = {
 const TOPICS = [
     {
         name: "Ăn TRÁI CÂY, tránh BOM",
-        correct: ["🍎", "🍊", "🍌", "🍇", "🍓", "🍑", "🍉", "🥝"],
+        correct: ["🍎", "🍊", "🍌", "🍇", "🍓", "🍑", "🍉", "🥝", "🍒", "🍐", 
+                  "🥭", "🍍", "🥥", "🫐", "🍈", "🍋", "🍏", "🥑", "🍅", "🌶️",
+                  "🥕", "🌽", "🥦", "🥒", "🫑", "🥬", "🧄", "🧅", "🥔"],
         wrong: ["💣"]
     }
 ];
 
-// Tạo danh sách tất cả items
-const ALL_ITEMS = ["🍎", "🍊", "🍌", "🍇", "🍓", "🍑", "🍉", "🥝", "💣"];
+// Tạo danh sách tất cả items (30 loại)
+const ALL_ITEMS = ["🍎", "🍊", "🍌", "🍇", "🍓", "🍑", "🍉", "🥝", "🍒", "🍐",
+                   "🥭", "🍍", "🥥", "🫐", "🍈", "🍋", "🍏", "🥑", "🍅", "🌶️",
+                   "🥕", "🌽", "🥦", "🥒", "🫑", "🥬", "🧄", "🧅", "🥔", "💣"];
 
 class Game {
     constructor() {
@@ -69,8 +73,8 @@ class Game {
             ai: new Image()
         };
         
-        this.playerIcons.player1.src = 'assets/iconfinder-snake-4591880_122131.svg';
-        this.playerIcons.player2.src = 'assets/iconfinder-snake-4591880_122131.svg'; // Dùng chung icon
+        this.playerIcons.player1.src = 'assets/artboard-18_89038.svg'; // Dùng chung icon
+        this.playerIcons.player2.src = 'assets/iconfinder-snake-4591880_122131.svg';
         this.playerIcons.ai.src = 'assets/artboard-18_89038.svg';
         
         // Tính toán kích thước canvas dựa trên màn hình
@@ -79,6 +83,21 @@ class Game {
         this.difficulty = 'medium';
         this.gameMode = 'single'; // 'single' hoặc 'multi'
         this.currentTopic = TOPICS[0]; // Khởi tạo topic mặc định
+        
+        // Thêm biến để tránh spam touch
+        this.lastTouchTime = 0;
+        this.touchCooldown = 100; // 100ms giữa các lần chạm
+        
+        // Load âm thanh
+        this.sounds = {
+            correct: new Audio('assets/freesound_community-eating-chips-81092.mp3'),
+            wrong: new Audio('assets/freesounds123-bomb-333672.mp3')
+        };
+        
+        // Đặt volume cho âm thanh
+        this.sounds.correct.volume = 0.5;
+        this.sounds.wrong.volume = 0.5;
+        
         this.reset();
         this.setupControls();
         
@@ -95,6 +114,13 @@ class Game {
         this.canvas.addEventListener('touchstart', (e) => {
             if (!this.gameRunning || this.gamePaused) return;
             
+            // Kiểm tra cooldown để tránh spam
+            const now = Date.now();
+            if (now - this.lastTouchTime < this.touchCooldown) {
+                return;
+            }
+            this.lastTouchTime = now;
+            
             e.preventDefault();
             const touch = e.touches[0];
             const rect = this.canvas.getBoundingClientRect();
@@ -104,15 +130,18 @@ class Game {
             
             // Chia màn hình làm 2: trái và phải
             const screenCenter = rect.width / 2;
+            const isTouchLeft = touchX < screenCenter;
             
-            // Xác định hướng cho người chơi 1
+            console.log('Touch tại X:', touchX, 'Center:', screenCenter, 'Nhấn:', isTouchLeft ? 'TRÁI' : 'PHẢI');
+            
+            // Điều khiển người chơi 1
             if (this.player.alive) {
-                this.turnSnake(this.player, touchX < screenCenter);
+                this.turnSnakeRelative(this.player, isTouchLeft);
             }
             
-            // Nếu chế độ 2 người
+            // Điều khiển người chơi 2 (nếu có)
             if (this.gameMode === 'multi' && this.player2 && this.player2.alive) {
-                this.turnSnake(this.player2, touchX < screenCenter);
+                this.turnSnakeRelative(this.player2, isTouchLeft);
             }
         });
         
@@ -123,48 +152,57 @@ class Game {
             const rect = this.canvas.getBoundingClientRect();
             const clickX = e.clientX - rect.left;
             const screenCenter = rect.width / 2;
+            const isClickLeft = clickX < screenCenter;
+            
+            console.log('Click tại X:', clickX, 'Center:', screenCenter, 'Nhấn:', isClickLeft ? 'TRÁI' : 'PHẢI');
             
             if (this.player.alive) {
-                this.turnSnake(this.player, clickX < screenCenter);
+                this.turnSnakeRelative(this.player, isClickLeft);
             }
         });
     }
     
-    turnSnake(snake, turnLeft) {
-        // Rẽ trái hoặc phải dựa trên hướng hiện tại
+    turnSnakeRelative(snake, turnLeft) {
+        // Rẽ trái hoặc phải dựa trên hướng hiện tại của rắn
+        // Nhìn từ phía sau con rắn: trái là bên trái tay, phải là bên phải tay
         const dir = snake.direction;
         
         if (turnLeft) {
-            // Rẽ trái
-            if (dir.x === 1) {
-                // Đang đi phải -> rẽ lên
+            // Nhấn TRÁI -> Rẽ sang bên TRÁI (từ góc nhìn của rắn)
+            if (dir.x === 1 && dir.y === 0) {
+                // Đang đi PHẢI (→) -> rẽ trái = đi LÊN (↑)
                 snake.nextDirection = {x: 0, y: -1};
-            } else if (dir.x === -1) {
-                // Đang đi trái -> rẽ xuống
+            } else if (dir.x === -1 && dir.y === 0) {
+                // Đang đi TRÁI (←) -> rẽ trái = đi XUỐNG (↓)
                 snake.nextDirection = {x: 0, y: 1};
-            } else if (dir.y === 1) {
-                // Đang đi xuống -> rẽ phải
-                snake.nextDirection = {x: 1, y: 0};
-            } else if (dir.y === -1) {
-                // Đang đi lên -> rẽ trái
+            } else if (dir.x === 0 && dir.y === -1) {
+                // Đang đi LÊN (↑) -> rẽ trái = đi TRÁI (←)
                 snake.nextDirection = {x: -1, y: 0};
+            } else if (dir.x === 0 && dir.y === 1) {
+                // Đang đi XUỐNG (↓) -> rẽ trái = đi PHẢI (→)
+                snake.nextDirection = {x: 1, y: 0};
             }
         } else {
-            // Rẽ phải
-            if (dir.x === 1) {
-                // Đang đi phải -> rẽ xuống
+            // Nhấn PHẢI -> Rẽ sang bên PHẢI (từ góc nhìn của rắn)
+            if (dir.x === 1 && dir.y === 0) {
+                // Đang đi PHẢI (→) -> rẽ phải = đi XUỐNG (↓)
                 snake.nextDirection = {x: 0, y: 1};
-            } else if (dir.x === -1) {
-                // Đang đi trái -> rẽ lên
+            } else if (dir.x === -1 && dir.y === 0) {
+                // Đang đi TRÁI (←) -> rẽ phải = đi LÊN (↑)
                 snake.nextDirection = {x: 0, y: -1};
-            } else if (dir.y === 1) {
-                // Đang đi xuống -> rẽ trái
-                snake.nextDirection = {x: -1, y: 0};
-            } else if (dir.y === -1) {
-                // Đang đi lên -> rẽ phải
+            } else if (dir.x === 0 && dir.y === -1) {
+                // Đang đi LÊN (↑) -> rẽ phải = đi PHẢI (→)
                 snake.nextDirection = {x: 1, y: 0};
+            } else if (dir.x === 0 && dir.y === 1) {
+                // Đang đi XUỐNG (↓) -> rẽ phải = đi TRÁI (←)
+                snake.nextDirection = {x: -1, y: 0};
             }
         }
+        
+        console.log('Nhấn:', turnLeft ? 'TRÁI' : 'PHẢI', '| Đang đi:', 
+            dir.x === 1 ? '→' : dir.x === -1 ? '←' : dir.y === -1 ? '↑' : '↓',
+            '| Sẽ đi:', 
+            snake.nextDirection.x === 1 ? '→' : snake.nextDirection.x === -1 ? '←' : snake.nextDirection.y === -1 ? '↑' : '↓');
     }
     
     calculateCanvasSize() {
@@ -932,7 +970,9 @@ class Game {
             const food = this.foods[i];
             if (head.x === food.x && head.y === food.y) {
                 if (food.isCorrect) {
-                    // Ăn trái cây
+                    // Ăn trái cây - phát âm thanh đúng
+                    this.playSound('correct');
+                    
                     const growCount = food.isSuper ? 3 : 1; // Super fruit cho 3 đốt
                     
                     for (let j = 0; j < growCount; j++) {
@@ -956,7 +996,8 @@ class Game {
                         }, 1000);
                     }
                 } else {
-                    // Ăn bom - giảm 2 đốt
+                    // Ăn bom - phát âm thanh sai
+                    this.playSound('wrong');
                     
                     // Giảm 2 đốt (nếu đủ dài)
                     if (snake.body.length > 3) {
@@ -977,6 +1018,17 @@ class Game {
                 this.updateUI();
                 break;
             }
+        }
+    }
+    
+    playSound(type) {
+        try {
+            // Clone audio để có thể phát nhiều lần liên tiếp
+            const sound = this.sounds[type].cloneNode();
+            sound.volume = 0.5;
+            sound.play().catch(e => console.log('Không thể phát âm thanh:', e));
+        } catch (e) {
+            console.log('Lỗi âm thanh:', e);
         }
     }
     
