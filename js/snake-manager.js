@@ -12,6 +12,7 @@ class SnakeManager {
             stunnedUntil: 0,
             color,
             alive: true,
+            lives: 3,  // Thêm số mạng
             isBot,
             respawnTime: 0,
             invincible: false,

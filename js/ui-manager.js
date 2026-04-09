@@ -4,9 +4,12 @@ class UIManager {
     static updateUI(player, ai, player2) {
         document.getElementById('player-length').textContent = player.body.length;
         document.getElementById('ai-length').textContent = ai.body.length;
+        document.getElementById('player-lives').textContent = '❤️'.repeat(player.lives);
+        document.getElementById('ai-lives').textContent = '❤️'.repeat(ai.lives);
         
         if (player2) {
             document.getElementById('player3-length').textContent = player2.body.length;
+            document.getElementById('player3-lives').textContent = '❤️'.repeat(player2.lives);
         }
     }
     

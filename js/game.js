@@ -427,6 +427,7 @@ class Game {
     
     killSnake(snake, reason) {
         snake.alive = false;
+        snake.lives--;  // Giảm số mạng
         
         // Biến thân rắn thành trái cây có label (như trái cây random bình thường)
         snake.body.forEach((segment) => {
@@ -440,6 +441,16 @@ class Game {
                 isSuper: false
             });
         });
+        
+        const type = snake === this.player ? 'player' : (snake === this.player2 ? 'player3' : 'ai');
+        
+        // Kiểm tra còn mạng không
+        if (snake.lives <= 0) {
+            UIManager.updateStatus(type, '💀 Hết mạng!');
+            UIManager.updateUI(this.player, this.ai, this.player2);
+            console.log(reason + ' - Hết mạng!');
+            return;  // Không hồi sinh nữa
+        }
         
         // Tìm vị trí hồi sinh
         let x, y;
@@ -472,8 +483,7 @@ class Game {
         
         snake.respawnTime = Date.now() + 3000;
         
-        const type = snake === this.player ? 'player' : (snake === this.player2 ? 'player3' : 'ai');
-        UIManager.updateStatus(type, '💀 Hồi sinh sau 3s...');
+        UIManager.updateStatus(type, `💀 Hồi sinh sau 3s... (${snake.lives} mạng còn lại)`);
         UIManager.updateUI(this.player, this.ai, this.player2);
         
         console.log(reason);
