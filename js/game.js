@@ -163,6 +163,22 @@ class Game {
             });
         }
         
+        // Nút Hướng dẫn từ welcome screen -> guide screen
+        const guideBtn = document.getElementById('guideBtn');
+        if (guideBtn) {
+            guideBtn.addEventListener('click', () => {
+                this.transitionScreen('welcomeScreen', 'guideScreen');
+            });
+        }
+        
+        // Nút Back từ guide -> welcome
+        const backToWelcomeBtn = document.getElementById('backToWelcomeBtn');
+        if (backToWelcomeBtn) {
+            backToWelcomeBtn.addEventListener('click', () => {
+                this.transitionScreen('guideScreen', 'welcomeScreen');
+            });
+        }
+        
         // Nút Next từ difficulty -> mode
         const nextBtn1 = document.getElementById('nextBtn1');
         if (nextBtn1) {

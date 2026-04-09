@@ -15,8 +15,55 @@
     
     <!-- Giao diện 1: Welcome Screen - Chỉ có nút Let's Go -->
     <div id="welcomeScreen" class="screen">
-        <button id="letsGoBtn" class="btn-lets-go-big">Let's Go! 🚀</button>
-    </div
+        <div class="welcome-buttons">
+            <button id="letsGoBtn" class="btn-lets-go-big">Let's Go! 🚀</button>
+            <button id="guideBtn" class="btn-guide">📖 Hướng dẫn chơi</button>
+        </div>
+    </div>
+    
+    <!-- Giao diện Hướng dẫn -->
+    <div id="guideScreen" class="screen" style="display: none;">
+        <div class="menu-container">
+            <h1 class="game-title">📖 Hướng dẫn chơi</h1>
+            
+            <div class="guide-content">
+                <div class="guide-section">
+                    <h3>🎯 Mục tiêu</h3>
+                    <p>Điều khiển rắn ăn trái cây đúng để tăng độ dài và đạt điểm cao nhất trong thời gian cho phép.</p>
+                </div>
+                
+                <div class="guide-section">
+                    <h3>🎮 Cách chơi</h3>
+                    <p><strong>Người chơi 1:</strong> Sử dụng phím mũi tên ← ↑ → ↓</p>
+                    <p><strong>Người chơi 2:</strong> Sử dụng phím W A S D</p>
+                </div>
+                
+                <div class="guide-section">
+                    <h3>🍎 Các loại vật phẩm</h3>
+                    <p>🟢 <strong>Trái cây có nhãn:</strong> Ăn đúng loại (+1 đốt), ăn sai sẽ có câu hỏi</p>
+                    <p>⭐ <strong>Trái cây bự:</strong> Xuất hiện mỗi 5 giây (+3 đốt)</p>
+                    <p>📚 <strong>Sách:</strong> Ăn vào sẽ có câu hỏi kiến thức</p>
+                    <p>💣 <strong>Bom:</strong> Giảm 2 đốt và choáng 2 giây</p>
+                </div>
+                
+                <div class="guide-section">
+                    <h3>❓ Câu hỏi</h3>
+                    <p>Khi ăn sách hoặc trái cây sai, bạn có 20 giây để trả lời câu hỏi.</p>
+                    <p>✅ Trả lời đúng: Tăng 2 đốt</p>
+                    <p>❌ Trả lời sai hoặc hết giờ: Giảm 2 đốt</p>
+                </div>
+                
+                <div class="guide-section">
+                    <h3>🏆 Chiến thắng</h3>
+                    <p>Người chơi có độ dài lớn nhất khi hết thời gian sẽ chiến thắng!</p>
+                </div>
+            </div>
+            
+            <div class="step-buttons center">
+                <button id="backToWelcomeBtn" class="btn-back-step">← Quay lại</button>
+            </div>
+        </div>
+    </div>
     
     <!-- Giao diện 2: Chọn cấp độ -->
     <div id="difficultyScreen" class="screen" style="display: none;">

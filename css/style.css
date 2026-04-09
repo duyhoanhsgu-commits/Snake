@@ -58,6 +58,15 @@ body::before {
     padding-bottom: 15vh;
 }
 
+.welcome-buttons {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+    align-items: center;
+}
+
 .logo-link {
     position: fixed;
     top: 3vh;
@@ -83,8 +92,6 @@ body::before {
 }
 
 .btn-lets-go-big {
-    position: relative;
-    z-index: 2;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
@@ -107,6 +114,26 @@ body::before {
     border-color: rgba(255, 255, 255, 0.6);
 }
 
+.btn-guide {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    border: none;
+    padding: 0.8em 2.5em;
+    font-size: clamp(1.1em, 3vw, 1.4em);
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(17, 153, 142, 0.4);
+    transition: all 0.3s ease;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-guide:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 15px 40px rgba(17, 153, 142, 0.6);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
 .btn-lets-go-big:active {
     transform: translateY(-2px) scale(1.02);
 }
@@ -125,8 +152,41 @@ body::before {
 /* ===== DIFFICULTY, MODE, SETTINGS SCREENS ===== */
 #difficultyScreen,
 #modeScreen,
-#settingsScreen {
+#settingsScreen,
+#guideScreen {
     background: transparent;
+}
+
+/* ===== GUIDE CONTENT ===== */
+.guide-content {
+    margin: 2vh 0;
+}
+
+.guide-section {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 2vh 2vw;
+    border-radius: 12px;
+    margin-bottom: 2vh;
+}
+
+.guide-section h3 {
+    color: #667eea;
+    font-size: clamp(1.1em, 2.2vw, 1.4em);
+    margin-bottom: 1vh;
+    text-align: left;
+}
+
+.guide-section p {
+    color: #333;
+    font-size: clamp(0.95em, 1.9vw, 1.1em);
+    line-height: 1.8;
+    margin: 0.8vh 0;
+    text-align: left;
+}
+
+.guide-section p strong {
+    color: #667eea;
+    font-weight: 600;
 }
 
 .step-title {
