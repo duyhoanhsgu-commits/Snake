@@ -4,94 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rắn Tri Thức: Cuộc Đua Phân Loại</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐍</text></svg>">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Màn hình chọn cấp độ -->
-    <div id="menuScreen" class="screen">
+    <!-- Logo cố định trên tất cả màn hình -->
+    <a href="https://soulandskills.vn/" target="_blank" class="logo-link">
+        <img src="assets/logo.png" alt="Logo" class="welcome-logo">
+    </a>
+    
+    <!-- Giao diện 1: Welcome Screen - Chỉ có nút Let's Go -->
+    <div id="welcomeScreen" class="screen">
+        <button id="letsGoBtn" class="btn-lets-go-big">Let's Go! 🚀</button>
+    </div
+    
+    <!-- Giao diện 2: Chọn cấp độ -->
+    <div id="difficultyScreen" class="screen" style="display: none;">
         <div class="menu-container">
             <h1 class="game-title">🐍 Rắn Tri Thức</h1>
+            <h3 class="step-title">Bước 1: Chọn đối thủ</h3>
             
-            <div class="menu-content">
-                <p class="game-description">
-                    Đối đầu với AI thông minh! Ăn đúng thức ăn theo chủ đề, tránh bẫy sai để ghi điểm.
-                </p>
-                
-                <!-- Bước 1: Chọn đối thủ -->
-                <div id="step1" class="step-container active">
-                    <div class="difficulty-selection">
-                        <h3>Bước 1: Chọn đối thủ</h3>
-                        
-                        <div class="difficulty-cards">
-                            <div class="difficulty-card" data-level="easy">
-                                <div class="difficulty-icon">😊🌱🐢</div>
-                                <div class="difficulty-name">🐍 Rắn AI<br>Mới Vào Nghề</div>
-                            </div>
-                            
-                            <div class="difficulty-card active" data-level="medium">
-                                <div class="difficulty-icon">😐⚡🎯</div>
-                                <div class="difficulty-name">🐍 Rắn AI<br>Chuyên Nghiệp</div>
-                            </div>
-                            
-                            <div class="difficulty-card" data-level="hard">
-                                <div class="difficulty-icon">😈🔥💀</div>
-                                <div class="difficulty-name">🐍 Rắn AI<br>Huyền Thoại</div>
-                            </div>
-                        </div>
-                    </div>
-                    <button id="nextBtn1" class="btn-next">Tiếp theo →</button>
+            <div class="difficulty-cards">
+                <div class="difficulty-card" data-level="easy">
+                    <div class="difficulty-icon"><img src="assets/easy.png" alt="Easy"></div>
+                    <div class="difficulty-name">🐍 Rắn AI<br>Mới Vào Nghề</div>
                 </div>
                 
-                <!-- Bước 2: Chọn chế độ chơi -->
-                <div id="step2" class="step-container">
-                    <div class="game-mode-selection">
-                        <h3>Bước 2: Chế độ chơi</h3>
-                        <div class="mode-buttons">
-                            <button class="mode-btn active" data-mode="single">
-                                <span class="mode-icon">🤖</span>
-                                <span class="mode-name">1 Người vs AI</span>
-                            </button>
-                            <button class="mode-btn" data-mode="multi">
-                                <span class="mode-icon">👥</span>
-                                <span class="mode-name">2 Người vs AI</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="step-buttons space-between">
-                        <button id="backBtn1" class="btn-back-step">← Quay lại</button>
-                        <button id="nextBtn2" class="btn-next">Tiếp theo →</button>
-                    </div>
+                <div class="difficulty-card active" data-level="medium">
+                    <div class="difficulty-icon"><img src="assets/medium.png" alt="Medium"></div>
+                    <div class="difficulty-name">🐍 Rắn AI<br>Chuyên Nghiệp</div>
                 </div>
                 
-                <!-- Bước 3: Chọn tốc độ và thời gian -->
-                <div id="step3" class="step-container">
-                    <h3>Bước 3: Cài đặt game</h3>
-                    
-                    <div class="speed-setting">
-                        <label for="gameSpeed">⚡ Tốc độ game:</label>
-                        <div class="speed-slider-container">
-                            <span class="speed-label">Chậm</span>
-                            <input type="range" id="gameSpeed" min="1" max="5" value="3" step="1">
-                            <span class="speed-label">Nhanh</span>
-                        </div>
-                        <div class="speed-value">Tốc độ: <span id="speedDisplay">Trung bình</span></div>
-                    </div>
-                    
-                    <div class="time-setting">
-                        <label for="gameTime">⏱️ Thời gian chơi (giây):</label>
-                        <input type="number" id="gameTime" min="30" max="300" value="30" step="10">
-                    </div>
-                    
-                    <div class="step-buttons space-between">
-                        <button id="backBtn2" class="btn-back-step">← Quay lại</button>
-                        <button id="playBtn" class="btn-play">Bắt đầu chơi 🎮</button>
-                    </div>
+                <div class="difficulty-card" data-level="hard">
+                    <div class="difficulty-icon"><img src="assets/legend.png" alt="Legend"></div>
+                    <div class="difficulty-name">🐍 Rắn AI<br>Huyền Thoại</div>
                 </div>
+            </div>
+            
+            <button id="nextBtn1" class="btn-next">Tiếp theo →</button>
+        </div>
+    </div>
+    
+    <!-- Giao diện 3: Chọn chế độ chơi -->
+    <div id="modeScreen" class="screen" style="display: none;">
+        <div class="menu-container">
+            <h1 class="game-title">🐍 Rắn Tri Thức</h1>
+            <h3 class="step-title">Bước 2: Chế độ chơi</h3>
+            
+            <div class="mode-buttons">
+                <button class="mode-btn active" data-mode="single">
+                    <span class="mode-icon">🤖</span>
+                    <span class="mode-name">1 Người vs AI</span>
+                </button>
+                <button class="mode-btn" data-mode="multi">
+                    <span class="mode-icon">👥</span>
+                    <span class="mode-name">2 Người vs AI</span>
+                </button>
+            </div>
+            
+            <div class="step-buttons space-between">
+                <button id="backBtn1" class="btn-back-step">← Quay lại</button>
+                <button id="nextBtn2" class="btn-next">Tiếp theo →</button>
             </div>
         </div>
     </div>
     
-    <!-- Màn hình chơi game -->
+    <!-- Giao diện 4: Chọn tốc độ và thời gian -->
+    <div id="settingsScreen" class="screen" style="display: none;">
+        <div class="menu-container">
+            <h1 class="game-title">🐍 Rắn Tri Thức</h1>
+            <h3 class="step-title">Bước 3: Cài đặt game</h3>
+            
+            <div class="speed-setting">
+                <label for="gameSpeed">⚡ Tốc độ game:</label>
+                <div class="speed-slider-container">
+                    <span class="speed-label">Chậm</span>
+                    <input type="range" id="gameSpeed" min="1" max="5" value="3" step="1">
+                    <span class="speed-label">Nhanh</span>
+                </div>
+                <div class="speed-value">Tốc độ: <span id="speedDisplay">Trung bình</span></div>
+            </div>
+            
+            <div class="time-setting">
+                <label for="gameTime">⏱️ Thời gian chơi (giây):</label>
+                <input type="number" id="gameTime" min="30" max="300" value="30" step="10">
+            </div>
+            
+            <div class="step-buttons space-between">
+                <button id="backBtn2" class="btn-back-step">← Quay lại</button>
+                <button id="playBtn" class="btn-play">Bắt đầu chơi 🎮</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Giao diện 5: Màn hình chơi game -->
     <div id="gameScreen" class="screen" style="display: none;">
         <div class="game-container">
             <div class="game-info">
@@ -123,24 +129,10 @@
             
             <div class="controls">
                 <button id="pauseBtn" class="btn-pause">Tạm dừng</button>
-                <div class="control-hint">
-                    <span id="control-text">⌨️ Điều khiển: Phím mũi tên ← ↑ → ↓</span>
-                </div>
                 <button id="backBtn" class="btn-back">Về menu</button>
             </div>
             
             <canvas id="gameCanvas"></canvas>
-            
-            <div class="legend">
-                <div class="legend-item">
-                    <span class="legend-color" style="background: #4CAF50;"></span>
-                    <span>Trái cây (+1 đốt) | ⭐ Trái cây bự (+3 đốt, mỗi 5s)</span>
-                </div>
-                <div class="legend-item">
-                    <span class="legend-color" style="background: #f44336;"></span>
-                    <span>Bom (-2 đốt, choáng 2s)</span>
-                </div>
-            </div>
         </div>
     </div>
     
@@ -154,6 +146,29 @@
         </div>
     </div>
     
+    <!-- Modal câu hỏi -->
+    <div id="questionModal" class="modal">
+        <div class="modal-content question-modal">
+            <h2 id="questionTitle">📚 Câu hỏi</h2>
+            <div id="questionTimer" class="question-timer">10</div>
+            <p id="questionText" class="question-text"></p>
+            <div id="questionAnswers" class="question-answers"></div>
+        </div>
+    </div>
+    
+    <!-- Load JavaScript files theo thứ tự -->
+    <script src="js/config.js"></script>
+    <script src="js/constants.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/audio-manager.js"></script>
+    <script src="js/snake-manager.js"></script>
+    <script src="js/food-manager.js"></script>
+    <script src="js/question-manager.js"></script>
+    <script src="js/ui-manager.js"></script>
+    <script src="js/collision-manager.js"></script>
+    <script src="js/input-controller.js"></script>
+    <script src="js/ai-controller.js"></script>
+    <script src="js/renderer.js"></script>
     <script src="js/game.js"></script>
 </body>
 </html>

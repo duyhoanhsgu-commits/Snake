@@ -1,0 +1,83 @@
+[
+  {
+    "id": 1,
+    "question": "Con gì đi không mỏi, đứng không mỏi, khi nằm là mỏi?",
+    "A": "Con rùa",
+    "B": "Cái đồng hồ",
+    "C": "Con cá",
+    "D": "Cái quạt",
+    "answer": "B"
+  },
+  {
+    "id": 2,
+    "question": "Con gì không chân nhưng chạy rất nhanh?",
+    "A": "Con sông",
+    "B": "Con rắn",
+    "C": "Con tàu",
+    "D": "Con gió",
+    "answer": "A"
+  },
+  {
+    "id": 3,
+    "question": "Cái gì bạn không nhìn thấy nhưng lúc nào cũng theo đuổi bạn?",
+    "A": "Kẻ trộm",
+    "B": "Ánh sáng",
+    "C": "Cái bóng",
+    "D": "Cơn gió",
+    "answer": "C"
+  },
+  {
+    "id": 4,
+    "question": "Củ gì khi càng già lại càng cay?",
+    "A": "Củ tỏi",
+    "B": "Củ hành",
+    "C": "Củ riềng",
+    "D": "Củ gừng",
+    "answer": "D"
+  },
+  {
+    "id": 5,
+    "question": "Cái gì mà càng nhiều thì càng nhẹ đi?",
+    "A": "Lỗ hổng",
+    "B": "Bong bóng",
+    "C": "Mây",
+    "D": "Bông gòn",
+    "answer": "A"
+  },
+  {
+    "id": 6,
+    "question": "Con gì đi ngược chiều nhưng vẫn về đích?",
+    "A": "Con kiến",
+    "B": "Con giun",
+    "C": "Con cua",
+    "D": "Con ốc sên",
+    "answer": "B"
+  },
+  {
+    "id": 7,
+    "question": "Cái gì có nhà, có đường, không có người?",
+    "A": "Thành phố ma",
+    "B": "Bức tranh",
+    "C": "Bản đồ",
+    "D": "Quyển truyện",
+    "answer": "C"
+  },
+  {
+    "id": 8,
+    "question": "Cái gì không nhìn thấy nhưng luôn tồn tại?",
+    "A": "Không khí",
+    "B": "Âm thanh",
+    "C": "Suy nghĩ",
+    "D": "Thời gian",
+    "answer": "A"
+  },
+  {
+    "id": 9,
+    "question": "Củ gì có thể làm bạn khóc?",
+    "A": "Củ cải",
+    "B": "Củ khoai tây",
+    "C": "Củ hành tây",
+    "D": "Củ sắn",
+    "answer": "C"
+  }
+]

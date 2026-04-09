@@ -12,7 +12,6 @@ html, body {
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     width: 100vw;
     margin: 0;
@@ -22,6 +21,18 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    background: url('../assets/background.png') center/cover no-repeat fixed;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 0;
 }
 
 .screen {
@@ -31,6 +42,99 @@ body {
     align-items: center;
     justify-content: center;
     padding: 2vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+/* ===== WELCOME SCREEN ===== */
+#welcomeScreen {
+    position: relative;
+    padding: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 15vh;
+}
+
+.logo-link {
+    position: fixed;
+    top: 3vh;
+    right: 3vw;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.logo-link:hover {
+    transform: scale(1.05);
+}
+
+.welcome-logo {
+    width: clamp(80px, 12vw, 150px);
+    height: auto;
+    display: block;
+    opacity: 0.95;
+    transition: all 0.3s ease;
+}
+
+.logo-link:hover .welcome-logo {
+    opacity: 1;
+}
+
+.btn-lets-go-big {
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 1em 3em;
+    font-size: clamp(1.5em, 4vw, 2em);
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+    transition: all 0.4s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    animation: pulseButton 2s ease-in-out infinite;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-lets-go-big:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 20px 50px rgba(102, 126, 234, 0.7);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-lets-go-big:active {
+    transform: translateY(-2px) scale(1.02);
+}
+
+@keyframes pulseButton {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+    }
+    50% {
+        transform: scale(1.03);
+        box-shadow: 0 18px 45px rgba(102, 126, 234, 0.6);
+    }
+}
+
+/* ===== DIFFICULTY, MODE, SETTINGS SCREENS ===== */
+#difficultyScreen,
+#modeScreen,
+#settingsScreen {
+    background: transparent;
+}
+
+.step-title {
+    text-align: center;
+    font-size: clamp(1.3em, 3vw, 1.8em);
+    color: #667eea;
+    margin: 1.5em 0;
+    font-weight: 600;
 }
 
 /* ===== MENU CONTAINER ===== */
@@ -146,6 +250,17 @@ h3 {
 .difficulty-icon {
     font-size: clamp(2em, 4vw, 3em);
     line-height: 1;
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.difficulty-icon img {
+    width: 60%;
+    height: auto;
+    object-fit: contain;
 }
 
 .difficulty-name {
@@ -420,10 +535,6 @@ button:hover {
         display: none !important;
     }
     
-    .legend {
-        display: none !important;
-    }
-    
     #gameCanvas {
         margin: 0 !important;
         border: none !important;
@@ -443,38 +554,38 @@ button:hover {
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    gap: 2vw;
-    margin-bottom: 2vh;
+    gap: 1.5vw;
+    margin-bottom: 1.5vh;
     flex-wrap: wrap;
 }
 
 .player-info-combined {
     flex: 1;
-    padding: 1.5vh 1.5vw;
-    border-radius: 12px;
+    padding: 1vh 1.2vw;
+    border-radius: 10px;
     background: linear-gradient(135deg, #667eea 0%, #4c6ef5 100%);
     color: white;
     display: flex;
     gap: 0;
-    min-width: 250px;
+    min-width: 220px;
 }
 
 .player-section {
     flex: 1;
-    padding: 0 1.5vw;
+    padding: 0 1.2vw;
 }
 
 .player-divider {
     border-left: 2px solid rgba(255, 255, 255, 0.3);
-    padding-left: 1.5vw;
+    padding-left: 1.2vw;
 }
 
 .player-info {
     flex: 1;
-    padding: 1.5vh 1.5vw;
-    border-radius: 12px;
+    padding: 1vh 1.2vw;
+    border-radius: 10px;
     color: white;
-    min-width: 200px;
+    min-width: 180px;
 }
 
 .player-blue {
@@ -490,41 +601,41 @@ button:hover {
 }
 
 .player-name {
-    font-size: clamp(0.9em, 1.8vw, 1.1em);
+    font-size: clamp(0.85em, 1.6vw, 1em);
     font-weight: bold;
-    margin-bottom: 1vh;
+    margin-bottom: 0.5vh;
 }
 
 .score,
 .length {
-    font-size: clamp(0.85em, 1.6vw, 1em);
-    margin: 0.5vh 0;
+    font-size: clamp(0.8em, 1.5vw, 0.95em);
+    margin: 0.3vh 0;
 }
 
 .status {
-    margin-top: 1vh;
+    margin-top: 0.5vh;
     font-weight: bold;
-    min-height: 20px;
-    font-size: clamp(0.85em, 1.6vw, 1em);
+    min-height: 18px;
+    font-size: clamp(0.8em, 1.5vw, 0.95em);
 }
 
 .timer-panel {
     text-align: center;
     background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-    padding: 1.5vh 3vw;
-    border-radius: 12px;
+    padding: 1vh 2.5vw;
+    border-radius: 10px;
     flex-shrink: 0;
-    min-width: 150px;
+    min-width: 130px;
 }
 
 .timer-label {
-    font-size: clamp(0.85em, 1.6vw, 1em);
+    font-size: clamp(0.8em, 1.5vw, 0.95em);
     color: #333;
     font-weight: bold;
 }
 
 .timer {
-    font-size: clamp(1.8em, 3.5vw, 2.5em);
+    font-size: clamp(1.6em, 3vw, 2.2em);
     font-weight: bold;
     color: #333;
     font-family: 'Courier New', monospace;
@@ -532,61 +643,30 @@ button:hover {
 
 #gameCanvas {
     display: block;
-    margin: 2vh auto;
+    margin: 1.5vh auto;
     border: 3px solid #333;
     border-radius: 10px;
     background: #ffffff;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     image-rendering: pixelated;
     max-width: 100%;
-    max-height: calc(95vh - 250px);
+    max-height: calc(95vh - 200px);
 }
 
 .controls {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 2vh;
+    margin-bottom: 1.5vh;
     gap: 2vw;
     flex-wrap: wrap;
 }
 
-.control-hint {
-    color: #666;
-    font-size: clamp(0.85em, 1.6vw, 1em);
-    text-align: center;
-    flex: 1;
-    min-width: 200px;
-}
-
 .controls button {
     margin: 0;
-    flex-shrink: 0;
-    padding: 1.5vh 3vw;
-    font-size: clamp(0.9em, 1.8vw, 1.1em);
-}
-
-.legend {
-    display: flex;
-    justify-content: center;
-    gap: 3vw;
-    margin-top: 2vh;
-    flex-wrap: wrap;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 1vw;
+    padding: 1vh 2.5vw;
     font-size: clamp(0.85em, 1.6vw, 1em);
-    color: #666;
-}
-
-.legend-color {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 2px solid #333;
+    min-width: 120px;
 }
 
 /* ===== MODALS ===== */
@@ -694,5 +774,133 @@ button:hover {
     .difficulty-icon,
     .mode-icon {
         font-size: 2em;
+    }
+}
+
+
+/* ===== QUESTION MODAL ===== */
+.question-modal {
+    max-width: 600px;
+    padding: 30px;
+}
+
+.question-timer {
+    font-size: 3em;
+    font-weight: bold;
+    color: #f5576c;
+    text-align: center;
+    margin: 10px 0;
+    font-family: 'Courier New', monospace;
+}
+
+.question-text {
+    font-size: 1.3em;
+    color: #333;
+    margin: 20px 0;
+    line-height: 1.6;
+    text-align: left;
+}
+
+.question-answers {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.answer-btn {
+    padding: 15px 20px;
+    font-size: 1.1em;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border: 3px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: left;
+    font-weight: normal;
+    margin: 0;
+}
+
+.answer-btn:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: translateX(5px);
+}
+
+
+/* ===== CONFETTI EFFECT ===== */
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: #f0f;
+    position: absolute;
+    animation: confetti-fall 3s linear forwards;
+    z-index: 9999;
+}
+
+@keyframes confetti-fall {
+    to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.celebration-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9998;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.celebration-message {
+    background: white;
+    padding: 3em 4em;
+    border-radius: 30px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: bounceIn 0.5s ease-out;
+}
+
+.celebration-message h2 {
+    font-size: 3em;
+    margin-bottom: 0.5em;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.celebration-message p {
+    font-size: 1.5em;
+    color: #555;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
     }
 }
