@@ -40,8 +40,8 @@ class QuestionManager {
         
         modal.classList.add('show');
         
-        // Đếm ngược 10 giây
-        let timeLeft = 10;
+        // Đếm ngược 20 giây
+        let timeLeft = 20;
         document.getElementById('questionTimer').textContent = timeLeft;
         
         const timer = setInterval(() => {

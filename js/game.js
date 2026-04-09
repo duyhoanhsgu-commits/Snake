@@ -412,29 +412,16 @@ class Game {
     killSnake(snake, reason) {
         snake.alive = false;
         
-        // Biến thân rắn thành thức ăn
-        snake.body.forEach((segment, index) => {
-            let foodInfo = snake.foodData[index];
-            
-            if (!foodInfo) {
-                const isCorrect = Math.random() > 0.5;
-                let label;
-                
-                if (isCorrect) {
-                    label = this.currentTopic.correct[Math.floor(Math.random() * this.currentTopic.correct.length)];
-                } else {
-                    const wrongItems = ALL_ITEMS.filter(item => !this.currentTopic.correct.includes(item));
-                    label = wrongItems[Math.floor(Math.random() * wrongItems.length)];
-                }
-                
-                foodInfo = { isCorrect, label };
-            }
+        // Biến thân rắn thành trái cây có label (như trái cây random bình thường)
+        snake.body.forEach((segment) => {
+            const label = this.currentTopic.correct[Math.floor(Math.random() * this.currentTopic.correct.length)];
             
             this.foods.push({
                 x: segment.x,
                 y: segment.y,
-                isCorrect: foodInfo.isCorrect,
-                label: foodInfo.label
+                isCorrect: true,
+                label: label,
+                isSuper: false
             });
         });
         
@@ -753,7 +740,7 @@ class Game {
         
         // Người chơi - đếm ngược thời gian
         document.getElementById('questionTitle').textContent = '📚 Câu hỏi';
-        let timeLeft = 10;
+        let timeLeft = 20;
         document.getElementById('questionTimer').textContent = timeLeft;
         
         this.questionTimer = setInterval(() => {

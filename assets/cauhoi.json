@@ -79,5 +79,473 @@
     "C": "Củ hành tây",
     "D": "Củ sắn",
     "answer": "C"
+  },
+  {
+    "id": 10,
+    "question": "Cái gì 4 chân nhưng đi không được?",
+    "A": "Con bàn",
+    "B": "Cái ghế",
+    "C": "Cái giường",
+    "D": "Cái tủ",
+    "answer": "B"
+  },
+  {
+    "id": 11,
+    "question": "Cái gì càng chia sẻ thì càng lớn lên?",
+    "A": "Tiền bạc",
+    "B": "Bánh kẹo",
+    "C": "Niềm vui",
+    "D": "Nỗi buồn",
+    "answer": "C"
+  },
+  {
+    "id": 12,
+    "question": "Cái gì càng dùng càng ngắn đi?",
+    "A": "Cái nến",
+    "B": "Cây thước",
+    "C": "Sợi dây",
+    "D": "Con đường",
+    "answer": "A"
+  },
+  {
+    "id": 13,
+    "question": "Bánh gì ngoài xanh trong trắng, cho đậu cho hành rồi thả thêm heo?",
+    "A": "Bánh dày",
+    "B": "Bánh tét",
+    "C": "Bánh chưng",
+    "D": "Bánh giò",
+    "answer": "C"
+  },
+  {
+    "id": 14,
+    "question": "Cái gì cứ đi mà không dừng?",
+    "A": "Con tàu",
+    "B": "Thời gian",
+    "C": "Dòng sông",
+    "D": "Cơn gió",
+    "answer": "B"
+  },
+  {
+    "id": 15,
+    "question": "Quả gì không chín?",
+    "A": "Quả sung",
+    "B": "Quả bóng",
+    "C": "Quả báo",
+    "D": "Quả cân",
+    "answer": "B"
+  },
+  {
+    "id": 16,
+    "question": "Càng giữ càng nhiều?",
+    "A": "Tiền tiết kiệm",
+    "B": "Ký ức",
+    "C": "Bí mật",
+    "D": "Đồ cũ",
+    "answer": "B"
+  },
+  {
+    "id": 17,
+    "question": "Càng lau càng ướt?",
+    "A": "Cái khăn",
+    "B": "Cái bàn",
+    "C": "Cái ly",
+    "D": "Sàn nhà",
+    "answer": "A"
+  },
+  {
+    "id": 18,
+    "question": "Răng thì nhiều nhưng không nhai được là gì?",
+    "A": "Bánh răng",
+    "B": "Cái lược",
+    "C": "Cái cưa",
+    "D": "Cái bừa",
+    "answer": "B"
+  },
+  {
+    "id": 19,
+    "question": "Cái gì bạn có thể giữ mà không bao giờ chạm vào?",
+    "A": "Cơn gió",
+    "B": "Lời hứa",
+    "C": "Ước mơ",
+    "D": "Bí mật",
+    "answer": "B"
+  },
+  {
+    "id": 20,
+    "question": "Tôi có thể là một phần của bạn nhưng không thể chạm vào. Tôi là gì?",
+    "A": "Tâm hồn",
+    "B": "Mạch máu",
+    "C": "Xương cốt",
+    "D": "Hơi thở",
+    "answer": "A"
+  },
+  {
+    "id": 21,
+    "question": "Tôi có thể bay xa nhiều quốc gia mà không cần lên máy bay là gì?",
+    "A": "Chim bồ câu",
+    "B": "Đám mây",
+    "C": "Internet",
+    "D": "Suy nghĩ",
+    "answer": "C"
+  },
+  {
+    "id": 22,
+    "question": "Có rất nhiều chiếc cánh, nhưng không thể bay là gì?",
+    "A": "Quạt trần",
+    "B": "Cánh cửa",
+    "C": "Cánh đồng",
+    "D": "Cánh tay",
+    "answer": "B"
+  },
+  {
+    "id": 23,
+    "question": "Không có chân nhưng có thể dẫn đường là gì?",
+    "A": "Bản đồ",
+    "B": "La bàn",
+    "C": "Biển báo",
+    "D": "Ngọn đèn",
+    "answer": "A"
+  },
+  {
+    "id": 24,
+    "question": "Bạn có biết cái gì luôn tiến mà không chịu lùi chưa?",
+    "A": "Con sông",
+    "B": "Thời gian",
+    "C": "Năm tháng",
+    "D": "Tuổi tác",
+    "answer": "C"
+  },
+  {
+    "id": 25,
+    "question": "Cái gì giữ cho bạn ấm nhưng không bao giờ nó nóng?",
+    "A": "Lò sưởi",
+    "B": "Áo khoác",
+    "C": "Chăn mền",
+    "D": "Túi sưởi",
+    "answer": "C"
+  },
+  {
+    "id": 26,
+    "question": "Cái gì bạn có thể giữ trong tay trái nhưng không thể giữ trong tay phải?",
+    "A": "Cái bút",
+    "B": "Cái bát",
+    "C": "Bàn tay phải của bạn",
+    "D": "Bàn tay trái của bạn",
+    "answer": "C"
+  },
+  {
+    "id": 27,
+    "question": "Tôi không có miệng nhưng có thể tạo ra âm thanh. Tôi là gì?",
+    "A": "Cái loa",
+    "B": "Cái chuông",
+    "C": "Nhạc cụ",
+    "D": "Cơn gió",
+    "answer": "C"
+  },
+  {
+    "id": 28,
+    "question": "Nhiều chân mà bước đi là điều không thể là gì?",
+    "A": "Con rết",
+    "B": "Bàn ghế",
+    "C": "Con nhện",
+    "D": "Cái giường",
+    "answer": "B"
+  },
+  {
+    "id": 29,
+    "question": "Cái gì làm bạn cười được, cũng có thể làm bạn khóc được?",
+    "A": "Phim hài",
+    "B": "Câu chuyện",
+    "C": "Hành tây",
+    "D": "Đám cưới",
+    "answer": "A"
+  },
+  {
+    "id": 30,
+    "question": "Không có mắt nhưng biết nhìn là gì?",
+    "A": "Cái gương",
+    "B": "Cái máy ảnh",
+    "C": "Tâm hồn",
+    "D": "Cái lỗ",
+    "answer": "A"
+  },
+  {
+    "id": 31,
+    "question": "Cái gì một năm ăn một lần và càng ăn thì càng lớn?",
+    "A": "Bánh chưng",
+    "B": "Tiệc tất niên",
+    "C": "Bánh sinh nhật",
+    "D": "Kỷ niệm",
+    "answer": "C"
+  },
+  {
+    "id": 32,
+    "question": "Tình yêu được ví như cây bút không thể viết được nữa gọi là gì?",
+    "A": "Yêu say đắm",
+    "B": "Yêu hết mực",
+    "C": "Yêu trọn đời",
+    "D": "Yêu chân thành",
+    "answer": "B"
+  },
+  {
+    "id": 33,
+    "question": "Ai đã dùng sức mạnh của cây tre để đánh bại quân thù?",
+    "A": "An Dương Vương",
+    "B": "Thánh Gióng",
+    "C": "Sơn Tinh",
+    "D": "Lạc Long Quân",
+    "answer": "B"
+  },
+  {
+    "id": 34,
+    "question": "Con vật nào luôn biết giờ mà không cần đồng hồ?",
+    "A": "Con chó",
+    "B": "Con mèo",
+    "C": "Gà trống",
+    "D": "Con chim sơn ca",
+    "answer": "C"
+  },
+  {
+    "id": 35,
+    "question": "Cái gì có thể bay lên trời mà không cần cánh?",
+    "A": "Đám mây",
+    "B": "Khinh khí cầu",
+    "C": "Máy bay",
+    "D": "Tên lửa",
+    "answer": "B"
+  },
+  {
+    "id": 36,
+    "question": "Cái gì luôn đứng yên mà vẫn có thể cho con cảm giác di chuyển?",
+    "A": "Cái võng",
+    "B": "Ghế xoay",
+    "C": "Xích đu",
+    "D": "Bập bênh",
+    "answer": "B"
+  },
+  {
+    "id": 37,
+    "question": "Cái gì làm cho con thấy ấm áp nhưng sẽ không thể mua được và cầm được?",
+    "A": "Ánh nắng",
+    "B": "Cái ôm",
+    "C": "Ngọn lửa",
+    "D": "Lời khen",
+    "answer": "B"
+  },
+  {
+    "id": 38,
+    "question": "Chữ nào biểu thị sự yêu thương và chăm sóc cha mẹ?",
+    "A": "Chữ Tâm",
+    "B": "Chữ Đức",
+    "C": "Chữ Hiếu",
+    "D": "Chữ Nghĩa",
+    "answer": "C"
+  },
+  {
+    "id": 39,
+    "question": "Cái gì luôn ở cạnh con, dù không thể nhìn thấy nhưng khi làm điều sai thì lại cảm nhận được?",
+    "A": "Cái bóng",
+    "B": "Lương tâm",
+    "C": "Không khí",
+    "D": "Thời gian",
+    "answer": "B"
+  },
+  {
+    "id": 40,
+    "question": "Một người đang khóc nhưng không phải vì buồn hay hạnh phúc thì được gọi là gì?",
+    "A": "Khóc nhè",
+    "B": "Khóc mướn",
+    "C": "Nước mắt cá sấu",
+    "D": "Khóc thầm",
+    "answer": "C"
+  },
+  {
+    "id": 41,
+    "question": "Có nhiều cánh và nhiều chủng loại nhưng không phải chim?",
+    "A": "Cái quạt điện",
+    "B": "Cánh cửa",
+    "C": "Con bướm",
+    "D": "Máy bay",
+    "answer": "A"
+  },
+  {
+    "id": 42,
+    "question": "Cái gì khi tách nhau ra thì không còn giá trị sử dụng?",
+    "A": "Đôi giày",
+    "B": "Đôi đũa",
+    "C": "Đôi mắt",
+    "D": "Đôi tất",
+    "answer": "B"
+  },
+  {
+    "id": 43,
+    "question": "Cái gì không bén như dao nhưng có thể gây chết người?",
+    "A": "Lời nói",
+    "B": "Tin đồn thất thiệt",
+    "C": "Ánh mắt",
+    "D": "Sự im lặng",
+    "answer": "B"
+  },
+  {
+    "id": 44,
+    "question": "Trái gì có màu xanh, khi chín thì vàng, ăn vào thì ngọt, còn làm nước rất ngon?",
+    "A": "Trái cam",
+    "B": "Trái xoài",
+    "C": "Trái dứa",
+    "D": "Trái mít",
+    "answer": "C"
+  },
+  {
+    "id": 45,
+    "question": "Trái gì không quan tâm ai, không thích nhiều chuyện?",
+    "A": "Trái bơ",
+    "B": "Trái lơ",
+    "C": "Trái bí",
+    "D": "Trái sầu riêng",
+    "answer": "A"
+  },
+  {
+    "id": 46,
+    "question": "Không có tay nhưng có thể chỉ đường là gì?",
+    "A": "Bản đồ",
+    "B": "Cái miệng",
+    "C": "Biển báo",
+    "D": "La bàn",
+    "answer": "B"
+  },
+  {
+    "id": 47,
+    "question": "Gọi là đồng tiền nhưng không thể tiêu sài là gì?",
+    "A": "Đồng tiền cổ",
+    "B": "Má lúm đồng tiền",
+    "C": "Đồng tiền vàng",
+    "D": "Đồng tiền ảo",
+    "answer": "B"
+  },
+  {
+    "id": 48,
+    "question": "Có càng nhiều bạn càng khó ngủ là gì?",
+    "A": "Tiền bạc",
+    "B": "Lo âu",
+    "C": "Công việc",
+    "D": "Niềm vui",
+    "answer": "B"
+  },
+  {
+    "id": 49,
+    "question": "Thứ gì luôn tăng chứ không chịu giảm?",
+    "A": "Cân nặng",
+    "B": "Giá cả",
+    "C": "Tuổi tác",
+    "D": "Dân số",
+    "answer": "C"
+  },
+  {
+    "id": 50,
+    "question": "Cái gì khi xuất hiện thì phát ra tiếng động mà tìm thì không thấy?",
+    "A": "Cơn gió",
+    "B": "Âm thanh",
+    "C": "Sấm sét",
+    "D": "Tiếng vang",
+    "answer": "B"
+  },
+  {
+    "id": 51,
+    "question": "Cái gì là người nhưng không có thân thể?",
+    "A": "Linh hồn",
+    "B": "Hình bóng",
+    "C": "Giấc mơ",
+    "D": "Ký ức",
+    "answer": "B"
+  },
+  {
+    "id": 52,
+    "question": "Luôn chạy nhưng không bao giờ mệt là gì?",
+    "A": "Dòng sông",
+    "B": "Thời gian",
+    "C": "Vận động viên",
+    "D": "Chiếc xe",
+    "answer": "B"
+  },
+  {
+    "id": 53,
+    "question": "Cái gì dù nhỏ đến đâu vẫn luôn nổi bật khi được đặt ở đúng vị trí?",
+    "A": "Viên kim cương",
+    "B": "Ngọn đèn",
+    "C": "Ngôi sao",
+    "D": "Hạt cát",
+    "answer": "B"
+  },
+  {
+    "id": 54,
+    "question": "Thứ gì có thể được chia sẻ mà không làm mất đi và càng giá trị hơn?",
+    "A": "Tiền bạc",
+    "B": "Kiến thức",
+    "C": "Tài sản",
+    "D": "Thức ăn",
+    "answer": "B"
+  },
+  {
+    "id": 55,
+    "question": "Điều gì có thể được tạo ra bởi người nhưng không bao giờ do người làm ra?",
+    "A": "Lịch sử",
+    "B": "Tương lai",
+    "C": "Số phận",
+    "D": "Thời gian",
+    "answer": "A"
+  },
+  {
+    "id": 56,
+    "question": "Tôi có thể đến mà không được mời, và đi mà không ai giữ lại. Tôi là gì?",
+    "A": "Cơn mưa",
+    "B": "Giấc mơ",
+    "C": "Cơn gió",
+    "D": "Người lạ",
+    "answer": "B"
+  },
+  {
+    "id": 57,
+    "question": "Điều gì có thể mang lại sự bình yên nhưng cũng có thể gây ra xung đột?",
+    "A": "Tiền bạc",
+    "B": "Ý kiến",
+    "C": "Tôn giáo",
+    "D": "Luật pháp",
+    "answer": "B"
+  },
+  {
+    "id": 58,
+    "question": "Điều gì sẽ bị phá vỡ mà không cần chạm vào?",
+    "A": "Lời hứa",
+    "B": "Sự im lặng",
+    "C": "Kỷ lục",
+    "D": "Trái tim",
+    "answer": "B"
+  },
+  {
+    "id": 59,
+    "question": "Cái gì chia sẻ được nhưng khi chia sẻ lại mất đi giá trị?",
+    "A": "Tiền lẻ",
+    "B": "Bí mật",
+    "C": "Kinh nghiệm",
+    "D": "Câu chuyện",
+    "answer": "B"
+  },
+  {
+    "id": 60,
+    "question": "Luôn đứng yên ở một nơi nhưng vẫn di chuyển không ngừng là gì?",
+    "A": "Trái đất",
+    "B": "Mặt đồng hồ",
+    "C": "Ngọn núi",
+    "D": "Cái cây",
+    "answer": "B"
+  },
+  {
+    "id": 61,
+    "question": "Không bao giờ bị ướt cho dù nó ở dưới nước cả đêm là gì?",
+    "A": "Con cá",
+    "B": "Sự tối tăm",
+    "C": "Dầu ăn",
+    "D": "Bong bóng khí",
+    "answer": "B"
   }
 ]
