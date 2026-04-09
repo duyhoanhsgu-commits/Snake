@@ -22,6 +22,7 @@ body {
     align-items: center;
     justify-content: center;
     background: url('../assets/background.png') center/cover no-repeat fixed;
+    filter: saturate(0.9) brightness(1.05);
 }
 
 body::before {
@@ -31,8 +32,19 @@ body::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 245, 235, 0.1) 100%);
     z-index: 0;
+    pointer-events: none;
+    animation: breathe 8s ease-in-out infinite;
+}
+
+@keyframes breathe {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
 }
 
 .screen {
@@ -73,10 +85,21 @@ body::before {
     right: 3vw;
     z-index: 1000;
     transition: all 0.3s ease;
+    animation: floatLogo 3s ease-in-out infinite;
+}
+
+@keyframes floatLogo {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 .logo-link:hover {
     transform: scale(1.05);
+    animation-play-state: paused;
 }
 
 .welcome-logo {
@@ -163,25 +186,78 @@ body::before {
 }
 
 .guide-section {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    padding: 2vh 2vw;
-    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    padding: 2.5vh 2.5vw;
+    border-radius: 20px;
     margin-bottom: 2vh;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.guide-section:nth-child(1) { animation-delay: 0.1s; }
+.guide-section:nth-child(2) { animation-delay: 0.2s; }
+.guide-section:nth-child(3) { animation-delay: 0.3s; }
+.guide-section:nth-child(4) { animation-delay: 0.4s; }
+.guide-section:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.guide-section:hover {
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 15px 45px rgba(102, 126, 234, 0.3);
+    border-color: rgba(102, 126, 234, 0.4);
 }
 
 .guide-section h3 {
     color: #667eea;
     font-size: clamp(1.1em, 2.2vw, 1.4em);
-    margin-bottom: 1vh;
+    margin-bottom: 1.2vh;
     text-align: left;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(102, 126, 234, 0.1);
+    position: relative;
+    display: inline-block;
+}
+
+.guide-section h3::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+.guide-section:hover h3::after {
+    width: 100%;
 }
 
 .guide-section p {
-    color: #333;
+    color: #555;
     font-size: clamp(0.95em, 1.9vw, 1.1em);
-    line-height: 1.8;
-    margin: 0.8vh 0;
+    line-height: 1.9;
+    margin: 1vh 0;
     text-align: left;
+    opacity: 0.9;
+    transition: all 0.3s ease;
+}
+
+.guide-section:hover p {
+    opacity: 1;
+    transform: translateX(5px);
 }
 
 .guide-section p strong {
@@ -199,14 +275,27 @@ body::before {
 
 /* ===== MENU CONTAINER ===== */
 .menu-container {
-    background: white;
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
     padding: 3vh 4vw;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 60px rgba(102, 126, 234, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.5);
     width: 90vw;
     max-width: 1200px;
     max-height: 95vh;
     overflow-y: auto;
+    animation: scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 /* ===== TYPOGRAPHY ===== */
@@ -216,6 +305,18 @@ body::before {
     margin-bottom: 1vh;
     text-align: center;
     font-weight: bold;
+    animation: fadeInDown 0.6s ease;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .game-description {

@@ -6,11 +6,30 @@ class Renderer {
         this.ctx = ctx;
         this.cellSize = cellSize;
         this.playerIcons = playerIcons;
+        
+        // Load background image
+        this.backgroundImage = new Image();
+        this.backgroundImage.src = 'assets/background_move.png';
+        this.backgroundLoaded = false;
+        this.backgroundImage.onload = () => {
+            this.backgroundLoaded = true;
+        };
     }
     
     clear() {
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        if (this.backgroundLoaded) {
+            // Vẽ background image scale để vừa với canvas
+            this.ctx.drawImage(
+                this.backgroundImage, 
+                0, 0, 
+                this.canvas.width, 
+                this.canvas.height
+            );
+        } else {
+            // Fallback nếu ảnh chưa load
+            this.ctx.fillStyle = '#ffffff';
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        }
     }
     
     drawRespawnMarkers(markers) {
