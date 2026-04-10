@@ -17,18 +17,55 @@ class Renderer {
     }
     
     clear() {
-        if (this.backgroundLoaded) {
-            // Vẽ background image scale để vừa với canvas
-            this.ctx.drawImage(
-                this.backgroundImage, 
-                0, 0, 
-                this.canvas.width, 
-                this.canvas.height
-            );
-        } else {
-            // Fallback nếu ảnh chưa load
-            this.ctx.fillStyle = '#ffffff';
-            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        // Vẽ nền gạch chân thật
+        this.drawBrickBackground();
+    }
+    
+    drawBrickBackground() {
+        const gridX = CONFIG.GRID_SIZE_X;
+        const gridY = CONFIG.GRID_SIZE_Y;
+        
+        for (let y = 0; y < gridY; y++) {
+            for (let x = 0; x < gridX; x++) {
+                const px = x * this.cellSize;
+                const py = y * this.cellSize;
+                
+                // Màu gạch xen kẽ tạo hiệu ứng caro nhẹ
+                const isEven = (x + y) % 2 === 0;
+                const baseColor = isEven ? '#f5e6d3' : '#f0dcc4';
+                
+                // Vẽ viên gạch
+                this.ctx.fillStyle = baseColor;
+                this.ctx.fillRect(px, py, this.cellSize, this.cellSize);
+                
+                // Vẽ đường viền gạch (grout lines)
+                this.ctx.strokeStyle = '#d4c4b0';
+                this.ctx.lineWidth = 1;
+                this.ctx.strokeRect(px, py, this.cellSize, this.cellSize);
+                
+                // Thêm hiệu ứng bóng nhẹ cho gạch (3D effect)
+                // Bóng trên
+                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                this.ctx.fillRect(px + 1, py + 1, this.cellSize - 2, 2);
+                
+                // Bóng trái
+                this.ctx.fillRect(px + 1, py + 1, 2, this.cellSize - 2);
+                
+                // Bóng dưới
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                this.ctx.fillRect(px + 1, py + this.cellSize - 3, this.cellSize - 2, 2);
+                
+                // Bóng phải
+                this.ctx.fillRect(px + this.cellSize - 3, py + 1, 2, this.cellSize - 2);
+                
+                // Thêm texture nhẹ cho gạch (random dots)
+                if (Math.random() > 0.7) {
+                    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.03)';
+                    const dotX = px + Math.random() * this.cellSize;
+                    const dotY = py + Math.random() * this.cellSize;
+                    this.ctx.fillRect(dotX, dotY, 1, 1);
+                }
+            }
         }
     }
     
@@ -62,7 +99,9 @@ class Renderer {
     drawFoods(foods) {
         foods.forEach(food => {
             const isSuper = food.isSuper;
-            const fontSize = isSuper ? 76 : 64;
+            // Scale font size theo cell size (tỷ lệ với 40px base)
+            const baseFontSize = isSuper ? 76 : 64;
+            const fontSize = baseFontSize * (this.cellSize / 40);
             
             this.ctx.fillStyle = food.isCorrect ? '#4CAF50' : '#f44336';
             this.ctx.fillRect(
@@ -123,7 +162,9 @@ class Renderer {
             this.ctx.roundRect(x + offset + 2, y + offset + 2, cellSize - 4, cellSize - 4, 6);
             this.ctx.fill();
             
-            this.ctx.font = `${80 * (cellSize / this.cellSize)}px Arial`;
+            // Scale emoji theo cell size
+            const emojiFontSize = 80 * (this.cellSize / 40);
+            this.ctx.font = `${emojiFontSize}px Arial`;
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText('🤖', x + this.cellSize / 2, y + this.cellSize / 2);
@@ -131,7 +172,8 @@ class Renderer {
             const icon = snake.isPlayer2 ? this.playerIcons.player2 : this.playerIcons.player1;
             
             if (icon && icon.complete) {
-                const iconSize = cellSize * 1.8;
+                // Tăng kích thước icon lên gấp đôi để bằng với AI emoji
+                const iconSize = this.cellSize * 2;
                 const centerX = x + this.cellSize / 2;
                 const centerY = y + this.cellSize / 2;
                 

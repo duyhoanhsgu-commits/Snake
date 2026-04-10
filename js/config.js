@@ -1,7 +1,7 @@
 // Cấu hình game
 const CONFIG = {
-    GRID_SIZE_X: 88,
-    GRID_SIZE_Y: 44,
+    GRID_SIZE_X: 80,
+    GRID_SIZE_Y: 40,
     CELL_SIZE: 20,
     GAME_SPEED: 150,
     GAME_DURATION: 60,

@@ -43,9 +43,38 @@ class Game {
     }
     
     calculateCanvasSize() {
-        CONFIG.CELL_SIZE = 40;
+        const isSmallScreen = window.innerWidth < 800;
+        
+        let availableWidth, availableHeight;
+        
+        if (isSmallScreen) {
+            // Màn hình nhỏ: tính chính xác để vừa màn hình
+            availableWidth = window.innerWidth;
+            availableHeight = window.innerHeight;
+            
+            // Tính cell size để canvas vừa khít
+            const cellSizeByWidth = availableWidth / CONFIG.GRID_SIZE_X;
+            const cellSizeByHeight = availableHeight / CONFIG.GRID_SIZE_Y;
+            
+            CONFIG.CELL_SIZE = Math.min(cellSizeByWidth, cellSizeByHeight);
+        } else {
+            // Màn hình lớn: chừa chỗ cho UI
+            availableWidth = window.innerWidth * 0.92;
+            availableHeight = window.innerHeight * 0.70;
+            
+            const cellSizeByWidth = availableWidth / CONFIG.GRID_SIZE_X;
+            const cellSizeByHeight = availableHeight / CONFIG.GRID_SIZE_Y;
+            
+            CONFIG.CELL_SIZE = Math.min(cellSizeByWidth, cellSizeByHeight, 30);
+            CONFIG.CELL_SIZE = Math.max(CONFIG.CELL_SIZE, 10);
+        }
+        
         this.canvas.width = CONFIG.GRID_SIZE_X * CONFIG.CELL_SIZE;
         this.canvas.height = CONFIG.GRID_SIZE_Y * CONFIG.CELL_SIZE;
+        
+        if (this.renderer) {
+            this.renderer.cellSize = CONFIG.CELL_SIZE;
+        }
     }
     
     transitionScreen(fromId, toId) {
@@ -138,15 +167,15 @@ class Game {
         });
         
         // Xử lý touch controls
-        this.inputController.setupTouchControls((isTouchLeft) => {
+        this.inputController.setupTouchControls((clickX, clickY) => {
             if (!this.gameRunning || this.gamePaused) return;
             
             if (this.player.alive) {
-                InputController.turnSnakeRelative(this.player, isTouchLeft);
+                InputController.setSnakeDirectionToPoint(this.player, clickX, clickY, CONFIG.CELL_SIZE);
             }
             
             if (this.gameMode === 'multi' && this.player2 && this.player2.alive) {
-                InputController.turnSnakeRelative(this.player2, isTouchLeft);
+                InputController.setSnakeDirectionToPoint(this.player2, clickX, clickY, CONFIG.CELL_SIZE);
             }
         });
         
