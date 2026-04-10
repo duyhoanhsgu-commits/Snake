@@ -947,6 +947,7 @@ button:hover {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    padding: 2vh 2vw;
 }
 
 .modal.show {
@@ -955,57 +956,49 @@ button:hover {
 
 .modal-content {
     background: white;
-    padding: 4vh 4vw;
+    padding: 3vh 3vw;
     border-radius: 20px;
     text-align: center;
     max-width: 90vw;
+    max-height: 90vh;
     width: 500px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
 }
 
 .modal-content h2 {
-    font-size: clamp(1.5em, 3vw, 2em);
+    font-size: clamp(1.3em, 4vw, 2em);
     margin-bottom: 2vh;
     color: #333;
 }
 
 #gameOverStats {
     margin: 2vh 0;
-    font-size: clamp(1em, 2vw, 1.2em);
+    font-size: clamp(0.9em, 2.5vw, 1.2em);
     line-height: 1.8;
     color: #666;
 }
 
-.header,
-.objective-panel,
-.topic-modal,
-.topic-icon,
-.topic-display,
-.topic-hint {
-    display: none;
-}
-
-/* ===== RESPONSIVE ===== */
-
 /* ===== QUESTION MODAL ===== */
 .question-modal {
-    max-width: 600px;
-    padding: 30px;
+    max-width: 90vw;
+    width: 600px;
+    padding: 2vh 3vw;
 }
 
 .question-timer {
-    font-size: 3em;
+    font-size: clamp(2em, 8vw, 3em);
     font-weight: bold;
     color: #f5576c;
     text-align: center;
-    margin: 10px 0;
+    margin: 1vh 0;
     font-family: 'Courier New', monospace;
 }
 
 .question-text {
-    font-size: 1.3em;
+    font-size: clamp(1em, 3vw, 1.3em);
     color: #333;
-    margin: 20px 0;
+    margin: 2vh 0;
     line-height: 1.6;
     text-align: left;
 }
@@ -1013,13 +1006,13 @@ button:hover {
 .question-answers {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 1vh;
+    margin-top: 2vh;
 }
 
 .answer-btn {
-    padding: 15px 20px;
-    font-size: 1.1em;
+    padding: 1.5vh 2vw;
+    font-size: clamp(0.9em, 2.5vw, 1.1em);
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     border: 3px solid transparent;
     border-radius: 10px;
@@ -1028,12 +1021,104 @@ button:hover {
     text-align: left;
     font-weight: normal;
     margin: 0;
+    word-wrap: break-word;
 }
 
 .answer-btn:hover {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     transform: translateX(5px);
+}
+
+/* Responsive cho modal trên màn hình nhỏ */
+@media (max-width: 800px) {
+    .modal {
+        padding: 1vh 1vw;
+    }
+    
+    .modal-content {
+        padding: 2vh 3vw;
+        border-radius: 15px;
+        max-width: 95vw;
+        max-height: 95vh;
+        width: auto;
+    }
+    
+    .modal-content h2 {
+        font-size: clamp(1.2em, 5vw, 1.8em);
+        margin-bottom: 1.5vh;
+    }
+    
+    .question-modal {
+        padding: 2vh 3vw;
+        max-width: 95vw;
+    }
+    
+    .question-timer {
+        font-size: clamp(1.8em, 10vw, 2.5em);
+        margin: 0.5vh 0;
+    }
+    
+    .question-text {
+        font-size: clamp(0.9em, 3.5vw, 1.1em);
+        margin: 1.5vh 0;
+        line-height: 1.5;
+    }
+    
+    .question-answers {
+        gap: 0.8vh;
+        margin-top: 1.5vh;
+    }
+    
+    .answer-btn {
+        padding: 1.2vh 2vw;
+        font-size: clamp(0.85em, 3vw, 1em);
+        border-radius: 8px;
+    }
+    
+    .answer-btn:hover {
+        transform: translateX(3px);
+    }
+    
+    .celebration-message {
+        padding: 2em 2.5em;
+        border-radius: 20px;
+        max-width: 90vw;
+    }
+    
+    .celebration-message h2 {
+        font-size: clamp(1.8em, 8vw, 2.5em);
+        margin-bottom: 0.3em;
+    }
+    
+    .celebration-message p {
+        font-size: clamp(1em, 4vw, 1.3em);
+    }
+}
+
+@media (max-width: 600px) {
+    .modal-content {
+        padding: 1.5vh 2.5vw;
+        border-radius: 12px;
+    }
+    
+    .question-modal {
+        padding: 1.5vh 2.5vw;
+    }
+    
+    .question-timer {
+        font-size: clamp(1.5em, 12vw, 2em);
+    }
+    
+    .question-text {
+        font-size: clamp(0.85em, 4vw, 1em);
+        margin: 1vh 0;
+    }
+    
+    .answer-btn {
+        padding: 1vh 1.5vw;
+        font-size: clamp(0.8em, 3.5vw, 0.95em);
+    }
 }
 
 
