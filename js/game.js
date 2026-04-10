@@ -57,6 +57,7 @@ class Game {
             const cellSizeByHeight = availableHeight / CONFIG.GRID_SIZE_Y;
             
             CONFIG.CELL_SIZE = Math.min(cellSizeByWidth, cellSizeByHeight);
+            CONFIG.CELL_SIZE = Math.max(CONFIG.CELL_SIZE, 25); // Min 25px cho 50×25
         } else {
             // Màn hình lớn: chừa chỗ cho UI
             availableWidth = window.innerWidth * 0.92;
@@ -65,8 +66,8 @@ class Game {
             const cellSizeByWidth = availableWidth / CONFIG.GRID_SIZE_X;
             const cellSizeByHeight = availableHeight / CONFIG.GRID_SIZE_Y;
             
-            CONFIG.CELL_SIZE = Math.min(cellSizeByWidth, cellSizeByHeight, 30);
-            CONFIG.CELL_SIZE = Math.max(CONFIG.CELL_SIZE, 10);
+            CONFIG.CELL_SIZE = Math.min(cellSizeByWidth, cellSizeByHeight, 50); // Max 50px
+            CONFIG.CELL_SIZE = Math.max(CONFIG.CELL_SIZE, 25); // Min 25px
         }
         
         this.canvas.width = CONFIG.GRID_SIZE_X * CONFIG.CELL_SIZE;
